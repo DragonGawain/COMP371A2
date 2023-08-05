@@ -1,0 +1,7 @@
+﻿  Source.cpp
+C:\Users\craig\source\repos\OpenGL_learning2\OpenGL_learning2\Source.cpp(499,25): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\craig\source\repos\OpenGL_learning2\OpenGL_learning2\Source.cpp(1412,31): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\craig\source\repos\OpenGL_learning2\OpenGL_learning2\Source.cpp(1710,39): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\craig\source\repos\OpenGL_learning2\OpenGL_learning2\Source.cpp(1711,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\craig\source\repos\OpenGL_learning2\OpenGL_learning2\Source.cpp(1712,39): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  OpenGL_learning2.vcxproj -> C:\Users\craig\source\repos\OpenGL_learning2\x64\Debug\OpenGL_learning2.exe
