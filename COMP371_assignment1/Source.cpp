@@ -38,6 +38,8 @@ glm::vec3 up;
 const float cameraMoveSpeed = 0.5f;
 const float cameraAngleSpeed = 0.5f;
 
+// name order within the position/rotation arrays
+// Craig, ???, ???, ???, ???
 
 // world rotations
 float rotationx = 0.0f;
@@ -47,32 +49,33 @@ float rotationz = 0.0f;
 const float rotationFactor = 2.5f;
 
 // complete model scaling
-float scaleFactor = 1.0f;
+float scaleFactor[5] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 const float scaleFactorModifier = 0.001f;
 
 // complete model movement
-float racketposx = 0.0f;
-float racketposy = 0.0f;
-float racketposz = 0.0f;
+float racketposx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float racketposy[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float racketposz[5] = { 0.0f, 10.0f, 20.0f, 30.0f, 40.0f };
 const float racketMoveSpeed = 0.5f;
 
 // lower arm rotations
-float larmrotx = 0.0f;
-float larmroty = 0.0f;
-float larmrotz = 315.0f;
+float larmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float larmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float larmrotz[5] = { 315.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
 // upper arm rotations
-float uarmrotx = 0.0f;
-float uarmroty = 0.0f;
-float uarmrotz = 45.0f;
+float uarmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float uarmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float uarmrotz[5] = { 45.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
 // racket rotations
-float racketrotx = 0.0f;
-float racketroty = 0.0f;
-float racketrotz = 0.0f;
+float racketrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float racketroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float racketrotz[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
 // switch var to determine which part of the model should be rotated
 int subject = 0;
+int controller = 0;
 
 bool canSelect = true;
 bool canTeleport = true;
@@ -87,20 +90,12 @@ bool firstMouse = true;
 
 
 
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
 
-
-int Assignment2(GLFWwindow* window) 
+int Assignment2(GLFWwindow* window)
 {
-
-    //Shader shader("colors1.vs", "colors1.fs");
-    //Shader lightCubeShader("light_cube1.vs", "light_cube1.fs");
 
     Shader firstPass("firstPass.vs", "firstPass.fs");
     Shader shadow("shadow.vs", "shadow.fs");
-
-    Shader debugDepthQuad("debug_quad.vs", "debug_quad_depth.fs");
 
 
     // 0 - x gridlines
@@ -134,7 +129,7 @@ int Assignment2(GLFWwindow* window)
         -1.0f, 0.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         -1.0f, 2.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
         -1.0f, 0.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f
-        -1.0f, 2.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        - 1.0f, 2.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
         // face 3 - back (XY primary)
         -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
@@ -178,7 +173,7 @@ int Assignment2(GLFWwindow* window)
          1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
         -1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
         -1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-        
+
         // ZY primary (left face)
         -1.0f,  2.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
         -1.0f,  2.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
@@ -210,7 +205,7 @@ int Assignment2(GLFWwindow* window)
          1.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
          1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
          1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
-        
+
         // XZ secondary (top face)
         -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
          1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
@@ -244,7 +239,7 @@ int Assignment2(GLFWwindow* window)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); //6
     glEnableVertexAttribArray(1); //7
 
-    
+
 
     // unit cube - model building block
     glBindVertexArray(VAOs[5]); //1
@@ -316,7 +311,7 @@ int Assignment2(GLFWwindow* window)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-    
+
     // define world up - used for camera and lighting
     glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -325,7 +320,7 @@ int Assignment2(GLFWwindow* window)
 
     // projection matrix
     glm::mat4 projectionMat = glm::perspective(glm::radians(90.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    
+
     // model matrix => use for non-scaling things (camera, coord markers)
     // used for global rotations
     glm::mat4 baseModelMat = glm::mat4(1.0f);
@@ -366,7 +361,7 @@ int Assignment2(GLFWwindow* window)
         front.y = sin(glm::radians(pitch));
         front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         front = glm::normalize(front);
-        right = glm::normalize(glm::cross(WorldUp, front)); 
+        right = glm::normalize(glm::cross(WorldUp, front));
         up = glm::normalize(glm::cross(front, right));
 
         viewMat = glm::lookAt(position, position + front, up);
@@ -410,7 +405,7 @@ int Assignment2(GLFWwindow* window)
             baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationz), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate on true Z
 
             firstPass.setMat4("model", baseModelMat);
-            
+
 
             // x coord marker
             //shader.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f)); // set color for x coord marker
@@ -436,7 +431,7 @@ int Assignment2(GLFWwindow* window)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             //shader.setVec3("trueColor", glm::vec3(0.0f, 0.8f, 0.0f)); // set color for gridlines
-            
+
             // x gridlines
             glBindVertexArray(VAOs[0]);
             for (int i = 0; i < 101; i++)
@@ -458,19 +453,19 @@ int Assignment2(GLFWwindow* window)
 
                 glDrawArrays(GL_LINES, 0, 2);
             }
-            
+
 
             // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
             // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
             // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
 
             // scaling matrix - top of hierarchy
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx, racketposy, racketposz)); // translates entire model - rooted at origin
-            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor, scaleFactor, scaleFactor)); // scales entire model
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[controller], racketposy[controller], racketposz[controller])); // translates entire model - rooted at origin
+            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[controller], scaleFactor[controller], scaleFactor[controller])); // scales entire model
             // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
 
             //modelMatLowerArm = baseModelMat;
             modelMatLowerArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -483,9 +478,9 @@ int Assignment2(GLFWwindow* window)
             // translate the upper arm so that it sits just above the lower arm
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
             // rotations for the upper arm protion of the model - the racket reflects the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
 
             //modelMatUpperArm = baseModelMat;
             modelMatUpperArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -496,9 +491,9 @@ int Assignment2(GLFWwindow* window)
 
             // apply hierarchical rotations for the racket
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 9.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz), glm::vec3(0.0f, 0.0f, 1.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f));
 
             //shader.setVec3("trueColor", glm::vec3(0.5f, 0.5f, 0.5f)); // SETTING ALL OF RACKET TO BE GREY FOR NOW
 
@@ -623,9 +618,6 @@ int Assignment2(GLFWwindow* window)
         shadow.setMat4("projection", projectionMat);
         shadow.setMat4("view", viewMat);
 
-        shadow.setVec3("lightPos", lightPos);
-        shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -661,7 +653,7 @@ int Assignment2(GLFWwindow* window)
 
             baseModelMat = glm::translate(baseModelMat, glm::vec3(-0.1f, -25.0f, -10.0f));
 
-            
+
 
             //shader.use();
 
@@ -691,7 +683,7 @@ int Assignment2(GLFWwindow* window)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             shadow.setVec3("trueColor", glm::vec3(0.0f, 0.8f, 0.0f)); // set color for gridlines
-            
+
             // x gridlines
             glBindVertexArray(VAOs[0]);
             for (int i = 0; i < 101; i++)
@@ -715,18 +707,18 @@ int Assignment2(GLFWwindow* window)
             }
 
             //shader.use();
-            
+
             // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
             // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
             // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
 
             // scaling matrix - top of hierarchy
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx, racketposy, racketposz)); // translates entire model - rooted at origin
-            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor, scaleFactor, scaleFactor)); // scales entire model
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[controller], racketposy[controller], racketposz[controller])); // translates entire model - rooted at origin
+            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[controller], scaleFactor[controller], scaleFactor[controller])); // scales entire model
             // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
 
             //modelMatLowerArm = baseModelMat;
             modelMatLowerArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -739,9 +731,9 @@ int Assignment2(GLFWwindow* window)
             // translate the upper arm so that it sits just above the lower arm
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
             // rotations for the upper arm protion of the model - the racket reflects the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
 
             //modelMatUpperArm = baseModelMat;
             modelMatUpperArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -752,9 +744,9 @@ int Assignment2(GLFWwindow* window)
 
             // apply hierarchical rotations for the racket
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 9.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz), glm::vec3(0.0f, 0.0f, 1.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f));
 
             shadow.setVec3("trueColor", glm::vec3(0.5f, 0.5f, 0.5f)); // SETTING ALL OF RACKET TO BE GREY FOR NOW
 
@@ -920,7 +912,7 @@ void processInput(GLFWwindow* window)
     {
         position -= front * cameraMoveSpeed;
     }
-    
+
     //camera angle
     // pitch up (positive pitch)
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
@@ -954,16 +946,16 @@ void processInput(GLFWwindow* window)
     // upscale
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
     {
-        scaleFactor += scaleFactorModifier;
-        if (scaleFactor >= 5)
-            scaleFactor = 5;
+        scaleFactor[controller] += scaleFactorModifier;
+        if (scaleFactor[controller] >= 5)
+            scaleFactor[controller] = 5;
     }
     // downscale
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
     {
-        scaleFactor -= scaleFactorModifier;
-        if (scaleFactor <= 0.05)
-            scaleFactor = 0.05;
+        scaleFactor[controller] -= scaleFactorModifier;
+        if (scaleFactor[controller] <= 0.05)
+            scaleFactor[controller] = 0.05;
     }
 
     // world rotations
@@ -1018,29 +1010,36 @@ void processInput(GLFWwindow* window)
         rotationy = 0.0f;
         rotationz = 0.0f;
 
-        // model scale
-        scaleFactor = 1.0f;
+        for (int i = 0; i < 5; i++)
+        {
+            // model scale
+            scaleFactor[i] = 1.0f;
 
-        // model position
-        racketposx = 0.1f;
-        racketposy = 0.0f;
-        racketposz = 0.0f;
+            // model position
+            racketposx[i] = 0.0f;
+            racketposy[i] = 0.0f;
+            racketposz[i] = 10 * i;;
 
-        // model rotation
-        // lower arm rotations
-        larmrotx = 0.0f;
-        larmroty = 0.0f;
-        larmrotz = 315.0f;
 
-        // upper arm rotations
-        uarmrotx = 0.0f;
-        uarmroty = 0.0f;
-        uarmrotz = 45.0f;
+            // model rotation
+            // lower arm rotations
+            larmrotx[i] = 0.0f;
+            larmroty[i] = 0.0f;
+            larmrotz[i] = 0.0f;
 
-        // racket rotation
-        racketrotx = 0.0f;
-        racketroty = 0.0f;
-        racketrotz = 0.0f;
+            // upper arm rotations
+            uarmrotx[i] = 0.0f;
+            uarmroty[i] = 0.0f;
+            uarmrotz[i] = 0.0f;
+
+            // racket rotation
+            racketrotx[i] = 0.0f;
+            racketroty[i] = 0.0f;
+            racketrotz[i] = 0.0f;
+        }
+
+        larmrotz[0] = 315.0f;
+        uarmrotz[0] = 45.0f;
 
         // camera position
         position = glm::vec3(0.0f, 30.0f, 15.0f);
@@ -1048,9 +1047,12 @@ void processInput(GLFWwindow* window)
         // camera angle
         yaw = 270.0f;
         pitch = -45.0f;
-        
+
         // model component selector
         subject = 0;
+
+        // model selector
+        controller = 0;
 
     }
 
@@ -1058,44 +1060,44 @@ void processInput(GLFWwindow* window)
     // up
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
     {
-        racketposy += racketMoveSpeed;
-        if (racketposy >= 50)
-            racketposy = 50;
+        racketposy[controller] += racketMoveSpeed;
+        if (racketposy[controller] >= 50)
+            racketposy[controller] = 50;
     }
     // down
     if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
     {
-        racketposy -= racketMoveSpeed;
-        if (racketposy <= -30)
-            racketposy = -30;
+        racketposy[controller] -= racketMoveSpeed;
+        if (racketposy[controller] <= -30)
+            racketposy[controller] = -30;
     }
     // right
     if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
     {
-        racketposx += racketMoveSpeed;
-        if (racketposx >= 40)
-            racketposx = 40;
+        racketposx[controller] += racketMoveSpeed;
+        if (racketposx[controller] >= 40)
+            racketposx[controller] = 40;
     }
     // left
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
     {
-        racketposx -= racketMoveSpeed;
-        if (racketposx <= -40)
-            racketposx = -40;
+        racketposx[controller] -= racketMoveSpeed;
+        if (racketposx[controller] <= -40)
+            racketposx[controller] = -40;
     }
     // forward
     if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
     {
-        racketposz += racketMoveSpeed;
-        if (racketposz >= 40)
-            racketposz = 40;
+        racketposz[controller] += racketMoveSpeed;
+        if (racketposz[controller] >= 40)
+            racketposz[controller] = 40;
     }
     // backwards
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
     {
-        racketposz -= racketMoveSpeed;
-        if (racketposz <= -40)
-            racketposz = -40;
+        racketposz[controller] -= racketMoveSpeed;
+        if (racketposz[controller] <= -40)
+            racketposz[controller] = -40;
     }
 
     // racket roation controls
@@ -1105,19 +1107,19 @@ void processInput(GLFWwindow* window)
         switch (subject)
         {
         case 0:
-            larmrotx += rotationFactor;
-            if (larmrotx >= 360)
-                larmrotx = 0.0f;
+            larmrotx[controller] += rotationFactor;
+            if (larmrotx[controller] >= 360)
+                larmrotx[controller] = 0.0f;
             break;
         case 1:
-            uarmrotx += rotationFactor;
-            if (uarmrotx >= 360)
-                uarmrotx = 0.0f;
+            uarmrotx[controller] += rotationFactor;
+            if (uarmrotx[controller] >= 360)
+                uarmrotx[controller] = 0.0f;
             break;
         case 2:
-            racketrotx += rotationFactor;
-            if (racketrotx >= 360)
-                racketrotx = 0.0f;
+            racketrotx[controller] += rotationFactor;
+            if (racketrotx[controller] >= 360)
+                racketrotx[controller] = 0.0f;
             break;
         }
     }
@@ -1127,19 +1129,19 @@ void processInput(GLFWwindow* window)
         switch (subject)
         {
         case 0:
-            larmrotx -= rotationFactor;
-            if (larmrotx <= 0)
-                larmrotx = 360.0f;
+            larmrotx[controller] -= rotationFactor;
+            if (larmrotx[controller] <= 0)
+                larmrotx[controller] = 360.0f;
             break;
         case 1:
-            uarmrotx -= rotationFactor;
-            if (uarmrotx <= 0)
-                uarmrotx = 360.0f;
+            uarmrotx[controller] -= rotationFactor;
+            if (uarmrotx[controller] <= 0)
+                uarmrotx[controller] = 360.0f;
             break;
         case 2:
-            racketrotx -= rotationFactor;
-            if (racketrotx <= 0)
-                racketrotx = 360.0f;
+            racketrotx[controller] -= rotationFactor;
+            if (racketrotx[controller] <= 0)
+                racketrotx[controller] = 360.0f;
             break;
         }
     }
@@ -1149,19 +1151,19 @@ void processInput(GLFWwindow* window)
         switch (subject)
         {
         case 0:
-            larmroty += rotationFactor;
-            if (larmroty >= 360)
-                larmroty = 0.0f;
+            larmroty[controller] += rotationFactor;
+            if (larmroty[controller] >= 360)
+                larmroty[controller] = 0.0f;
             break;
         case 1:
-            uarmroty += rotationFactor;
-            if (uarmroty >= 360)
-                uarmroty = 0.0f;
+            uarmroty[controller] += rotationFactor;
+            if (uarmroty[controller] >= 360)
+                uarmroty[controller] = 0.0f;
             break;
         case 2:
-            racketroty += rotationFactor;
-            if (racketroty >= 360)
-                racketroty = 0.0f;
+            racketroty[controller] += rotationFactor;
+            if (racketroty[controller] >= 360)
+                racketroty[controller] = 0.0f;
             break;
         }
     }
@@ -1171,19 +1173,19 @@ void processInput(GLFWwindow* window)
         switch (subject)
         {
         case 0:
-            larmroty -= rotationFactor;
-            if (larmroty <= 0)
-                larmroty = 360.0f;
+            larmroty[controller] -= rotationFactor;
+            if (larmroty[controller] <= 0)
+                larmroty[controller] = 360.0f;
             break;
         case 1:
-            uarmroty -= rotationFactor;
-            if (uarmroty <= 0)
-                uarmroty = 360.0f;
+            uarmroty[controller] -= rotationFactor;
+            if (uarmroty[controller] <= 0)
+                uarmroty[controller] = 360.0f;
             break;
         case 2:
-            racketroty -= rotationFactor;
-            if (racketroty <= 0)
-                racketroty = 360.0f;
+            racketroty[controller] -= rotationFactor;
+            if (racketroty[controller] <= 0)
+                racketroty[controller] = 360.0f;
             break;
         }
     }
@@ -1193,19 +1195,19 @@ void processInput(GLFWwindow* window)
         switch (subject)
         {
         case 0:
-            larmrotz += rotationFactor;
-            if (larmrotz >= 360)
-                larmrotz = 0.0f;
+            larmrotz[controller] += rotationFactor;
+            if (larmrotz[controller] >= 360)
+                larmrotz[controller] = 0.0f;
             break;
         case 1:
-            uarmrotz += rotationFactor;
-            if (uarmrotz >= 360)
-                uarmrotz = 0.0f;
+            uarmrotz[controller] += rotationFactor;
+            if (uarmrotz[controller] >= 360)
+                uarmrotz[controller] = 0.0f;
             break;
         case 2:
-            racketrotz += rotationFactor;
-            if (racketrotz >= 360)
-                racketrotz = 0.0f;
+            racketrotz[controller] += rotationFactor;
+            if (racketrotz[controller] >= 360)
+                racketrotz[controller] = 0.0f;
             break;
         }
     }
@@ -1215,19 +1217,19 @@ void processInput(GLFWwindow* window)
         switch (subject)
         {
         case 0:
-            larmrotz -= rotationFactor;
-            if (larmrotz <= 0)
-                larmrotz = 360.0f;
+            larmrotz[controller] -= rotationFactor;
+            if (larmrotz[controller] <= 0)
+                larmrotz[controller] = 360.0f;
             break;
         case 1:
-            uarmrotz -= rotationFactor;
-            if (uarmrotz <= 0)
-                uarmrotz = 360.0f;
+            uarmrotz[controller] -= rotationFactor;
+            if (uarmrotz[controller] <= 0)
+                uarmrotz[controller] = 360.0f;
             break;
         case 2:
-            racketrotz -= rotationFactor;
-            if (racketrotz <= 0)
-                racketrotz = 360.0f;
+            racketrotz[controller] -= rotationFactor;
+            if (racketrotz[controller] <= 0)
+                racketrotz[controller] = 360.0f;
             break;
         }
     }
@@ -1266,9 +1268,9 @@ void processInput(GLFWwindow* window)
     {
         if (canTeleport)
         {
-            racketposx = rand() % 101 - 50;
-            racketposy = rand() % 61 - 30;
-            racketposz = rand() % 101 - 50;
+            racketposx[controller] = rand() % 101 - 50;
+            racketposy[controller] = rand() % 61 - 30;
+            racketposz[controller] = rand() % 101 - 50;
             canTeleport = false;
         }
     }
@@ -1276,7 +1278,7 @@ void processInput(GLFWwindow* window)
     {
         canTeleport = true;
     }
-    
+
     // standard display mode - full faces
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
     {
