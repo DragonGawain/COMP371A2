@@ -1022,14 +1022,14 @@ int Assignment2(GLFWwindow* window)
                 glm::scale(glm::mat4(1.0), glm::vec3(scaleFactor[1], scaleFactor[1], scaleFactor[1]));
 
             // Limbs
-            glm::mat4 Limb = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.5f, 0.0f)) *
+            glm::mat4 Limb = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
 
             // ARM
-            glm::mat4 tennisArm = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.0f, 0.0f)) *
+            glm::mat4 tennisArm = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
 
             firstPass.setMat4("model", tennisArm);
@@ -1039,7 +1039,7 @@ int Assignment2(GLFWwindow* window)
 
             // Hand
 
-            glm::mat4 HandLimb = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.5f, 0.0f)) *
+            glm::mat4 HandLimb = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.1f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
@@ -1047,7 +1047,7 @@ int Assignment2(GLFWwindow* window)
 
             // ARM
             glm::mat4 tennisHand = HandLimb *
-                glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.05f, 0.0f)) *
+                glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
 
 
@@ -1060,7 +1060,7 @@ int Assignment2(GLFWwindow* window)
 
             // Hand
 
-            glm::mat4 handRacketConnect = HandLimb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.1f, 0.0f)) *
+            glm::mat4 handRacketConnect = HandLimb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
@@ -1068,7 +1068,7 @@ int Assignment2(GLFWwindow* window)
 
             //changeTexture(rubberTexture);
             // Tennis Racket
-            glm::mat4 tennisRacket = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.05f, 0.0f)) *
+            glm::mat4 tennisRacket = handRacketConnect * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.05f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
 
@@ -1102,7 +1102,7 @@ int Assignment2(GLFWwindow* window)
             //changeTexture(metalTexture);
             // Left Side
             glm::mat4 racketLeftSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 1.75f * 2, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 3.0f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
 
             firstPass.setMat4("model", racketLeftSide);
@@ -1114,7 +1114,7 @@ int Assignment2(GLFWwindow* window)
             // Right Side
 
             glm::mat4 racketRightSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-4.5f, 1.75f * 2, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-4.5f, 3.0f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
 
             firstPass.setMat4("model", racketRightSide);
@@ -1126,7 +1126,7 @@ int Assignment2(GLFWwindow* window)
 
             // Bottom Side
             glm::mat4 racketBottomSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.5f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.15f / 2, 0.2f, 0.18f));
 
 
@@ -1138,8 +1138,8 @@ int Assignment2(GLFWwindow* window)
 
             // Top Side
             glm::mat4 racketTopSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 4.75f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.75f / 2, 0.2f, 0.2f));
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 5.1f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(0.9f / 2, 0.2f, 0.2f));
 
             firstPass.setMat4("model", racketTopSide);
             //shader.setMat4("model", racketTopSide);
@@ -1150,7 +1150,7 @@ int Assignment2(GLFWwindow* window)
 
             // Bottom Right Handle Parts
             glm::mat4 racketBottomRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.47f, 1.40f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0.6f, 2.00f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
 
@@ -1162,9 +1162,9 @@ int Assignment2(GLFWwindow* window)
 
             // Bottom Left Handle Parts
             glm::mat4 racketBottomLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.47f, 1.40f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(35.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 1.55f / 2, 0.2f));
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.6f, 2.0f, 0.0f))
+                * glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
 
             firstPass.setMat4("model", racketBottomLeftHandle);
             //shader.setMat4("model", racketBottomLeftHandle);
@@ -1176,7 +1176,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.80, 4.39f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0.91, 4.72f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
 
@@ -1190,7 +1190,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.55f, 4.67f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0.77f, 5.13f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
 
@@ -1203,7 +1203,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.80, 4.39f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.91, 4.72f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(-25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
 
@@ -1217,7 +1217,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.55f, 4.67f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.77f, 5.13f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(-65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
 
@@ -1234,7 +1234,7 @@ int Assignment2(GLFWwindow* window)
             // Horizontal
             for (int i = 0; i < 14; ++i) {
                 glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, (3.25f - (0.2 * (7 - i))), 0.0f))
+                    * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, (4.00f - (0.2 * (7 - i))), 0.0f))
                     * glm::scale(glm::mat4(1.0f), glm::vec3(1.7f / 2, 0.05f, 0.05f));
 
                 firstPass.setMat4("model", racketGrid);
@@ -1249,7 +1249,7 @@ int Assignment2(GLFWwindow* window)
             // Vertical
             for (int i = 0; i < 7; ++i) {
                 glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3((0.0f - (0.2 * (3 - i))), (3.17f), 0.0f))
+                    * glm::translate(glm::mat4(1.0f), glm::vec3((0.0f - (0.2 * (3 - i))), (2.17f), 0.0f))
                     * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 3.13f / 2, 0.05f));
 
                 firstPass.setMat4("model", racketGrid);
@@ -1676,14 +1676,14 @@ int Assignment2(GLFWwindow* window)
                 glm::scale(glm::mat4(1.0), glm::vec3(scaleFactor[1], scaleFactor[1], scaleFactor[1]));
 
             // Limbs
-            glm::mat4 Limb = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.5f, 0.0f)) *
+            glm::mat4 Limb = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
 
             // ARM
-            glm::mat4 tennisArm = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.0f, 0.0f)) *
+            glm::mat4 tennisArm = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
 
             shadow.setMat4("model", tennisArm);
@@ -1694,7 +1694,7 @@ int Assignment2(GLFWwindow* window)
 
             // Hand
 
-            glm::mat4 HandLimb = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.5f, 0.0f)) *
+            glm::mat4 HandLimb = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.1, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
@@ -1702,7 +1702,7 @@ int Assignment2(GLFWwindow* window)
 
             // ARM
             glm::mat4 tennisHand = HandLimb *
-                glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.05f, 0.0f)) *
+                glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
 
 
@@ -1716,7 +1716,7 @@ int Assignment2(GLFWwindow* window)
 
             // Hand
 
-            glm::mat4 handRacketConnect = HandLimb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.1f, 0.0f)) *
+            glm::mat4 handRacketConnect = HandLimb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
@@ -1724,7 +1724,7 @@ int Assignment2(GLFWwindow* window)
 
             //changeTexture(rubberTexture);
             // Tennis Racket
-            glm::mat4 tennisRacket = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.05f, 0.0f)) *
+            glm::mat4 tennisRacket = handRacketConnect * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
                 glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
                 glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
 
@@ -1772,7 +1772,7 @@ int Assignment2(GLFWwindow* window)
             //changeTexture(metalTexture);
             // Left Side
             glm::mat4 racketLeftSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 1.75f * 2, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 3.0f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
 
             shadow.setMat4("model", racketLeftSide);
@@ -1785,7 +1785,7 @@ int Assignment2(GLFWwindow* window)
             // Right Side
 
             glm::mat4 racketRightSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-4.5f, 1.75f * 2, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-4.5f, 3.0f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
 
             shadow.setMat4("model", racketRightSide);
@@ -1798,7 +1798,7 @@ int Assignment2(GLFWwindow* window)
 
             // Bottom Side
             glm::mat4 racketBottomSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.5f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.15f / 2, 0.2f, 0.18f));
 
 
@@ -1811,8 +1811,8 @@ int Assignment2(GLFWwindow* window)
 
             // Top Side
             glm::mat4 racketTopSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 4.75f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.75f / 2, 0.2f, 0.2f));
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 5.1f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(0.9f / 2, 0.2f, 0.2f));
 
             shadow.setMat4("model", racketTopSide);
             shadow.setVec3("trueColor", racketGreyColor);
@@ -1824,7 +1824,7 @@ int Assignment2(GLFWwindow* window)
 
             // Bottom Right Handle Parts
             glm::mat4 racketBottomRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.47f, 1.40f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0.6f, 2.00f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
 
@@ -1837,9 +1837,9 @@ int Assignment2(GLFWwindow* window)
 
             // Bottom Left Handle Parts
             glm::mat4 racketBottomLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.47f, 1.40f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(35.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 1.55f / 2, 0.2f));
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.6f, 2.0f, 0.0f))
+                * glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
 
             shadow.setMat4("model", racketBottomLeftHandle);
             shadow.setVec3("trueColor", racketGreyColor);
@@ -1852,7 +1852,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.80, 4.39f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0.91, 4.72f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
 
@@ -1867,7 +1867,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.55f, 4.67f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0.77f, 5.13f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
 
@@ -1881,7 +1881,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.80, 4.39f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.91, 4.72f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(-25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
 
@@ -1896,7 +1896,7 @@ int Assignment2(GLFWwindow* window)
 
             // Top Right Handle Parts
             glm::mat4 racketTopTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.55f, 4.67f, 0.0f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.77f, 5.13f, 0.0f))
                 * glm::rotate(glm::mat4(1.0f), glm::radians(-65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
 
@@ -1914,7 +1914,7 @@ int Assignment2(GLFWwindow* window)
             // Horizontal
             for (int i = 0; i < 14; ++i) {
                 glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, (3.25f - (0.2 * (7 - i))), 0.0f))
+                    * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, (4.00f - (0.2 * (7 - i))), 0.0f))
                     * glm::scale(glm::mat4(1.0f), glm::vec3(1.7f / 2, 0.05f, 0.05f));
 
                 shadow.setMat4("model", racketGrid);
@@ -1930,7 +1930,7 @@ int Assignment2(GLFWwindow* window)
             // Vertical
             for (int i = 0; i < 7; ++i) {
                 glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3((0.0f - (0.2 * (3 - i))), (3.17f), 0.0f))
+                    * glm::translate(glm::mat4(1.0f), glm::vec3((0.0f - (0.2 * (3 - i))), (2.17f), 0.0f))
                     * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 3.13f / 2, 0.05f));
 
                 shadow.setMat4("model", racketGrid);
