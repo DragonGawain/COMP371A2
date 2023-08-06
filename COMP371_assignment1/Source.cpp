@@ -93,6 +93,154 @@ float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 
+const int sphereStacks = 128; // Number of horizontal cuts
+const int sphereSectors = 256; // Number of vertical cuts
+glm::vec3 sphereVertexArray[3 * (sphereStacks * sphereSectors + 2)]; // List of all vertices
+unsigned int sphereIndexArray[6 * sphereSectors * sphereStacks]; // Order of vertices for EBO
+
+// Instantiates all position and texture position values for the sphereVertexArray for given stacks and sectors
+void defineSphereVertexArray() {
+    float phi = -180.0f, theta = 0.f; // Spherical coordinates (radius rho assumed to be 1)
+    int index = 1;
+
+    // Bottom of sphere
+    sphereVertexArray[0] = glm::vec3(0.0f, -1.0f, 0.0f); // Position
+    sphereVertexArray[1] = glm::vec3(0.0f, 0.0f, 0.0f); // Texture UV
+
+    // Top of sphere
+    sphereVertexArray[3 * (sphereStacks * sphereSectors + 1)] = glm::vec3(0.0f, 1.0f, 0.0f); // Position
+    sphereVertexArray[3 * (sphereStacks * sphereSectors + 1) + 1] = glm::vec3(0.0f, 1.0f, 0.0f); // Texture UV
+
+
+    for (int i = 1; i < sphereStacks + 1; i++) {
+        phi = -180.0f + 180.0f * ((float)i / (sphereStacks + 1)); // Rotate counter-clockwise around x-axis
+
+        for (int j = 0; j < sphereSectors; j++) {
+            theta = 360.0f * ((float)j / sphereSectors); // Rotate couter-clockwise around y-axis
+
+            glm::vec3 vector = glm::vec3(glm::sin(glm::radians(phi)) * glm::cos(glm::radians(theta)),
+                glm::cos(glm::radians(phi)),
+                glm::sin(glm::radians(phi)) * glm::sin(glm::radians(theta))); // Define rectangular coordinates in terms of spherical coordinates
+            sphereVertexArray[3 * index] = vector;
+
+            sphereVertexArray[3 * index + 1] = glm::vec3(theta / 360.0, (phi + 180.0f) / 180.0f, 0.0f); // UV positions texture
+            index++;
+        }
+    }
+}
+
+// Computes the normal vector of a face with three given vectors, and adds said normal vector to the vertex normal
+void computeNormals(unsigned int p1, unsigned int p2, unsigned int p3) {
+    glm::vec3 p1Pos = sphereVertexArray[3 * p1], p2Pos = sphereVertexArray[3 * p2], p3Pos = sphereVertexArray[3 * p3]; // Positions of relevant vertices
+    glm::vec3 faceNormal = glm::normalize(glm::cross(p2Pos - p1Pos, p3Pos - p1Pos)); // Normal vector of the resulting plane
+
+    sphereVertexArray[3 * p1 + 2] += faceNormal;
+    sphereVertexArray[3 * p2 + 2] += faceNormal;
+    sphereVertexArray[3 * p3 + 2] += faceNormal;
+}
+
+//Instantiates all values for the sphereIndexArray for given stacks and sectors
+void defineSphereIndexArray() {
+    int currentStack = 1, currentSector = 0, positionInVertexArray = 1, positionInIndexArray = 0;
+
+    // Bottom of sphere
+    for (currentSector = 0; currentSector < sphereSectors; currentSector++) {
+        int nextSector = (currentSector == sphereSectors - 1) ? 0 : currentSector + 1; // Lowest layer: indices [1, sphereSectors + 1]
+        int p1 = currentSector + 1, p2 = nextSector + 1; // indices of relevant vertices in vertex array
+
+        // Triangle facing down
+        sphereIndexArray[positionInIndexArray++] = 0; // Lowest point
+        sphereIndexArray[positionInIndexArray++] = p1;
+        sphereIndexArray[positionInIndexArray++] = p2;
+        computeNormals(0, p1, p2);
+    }
+
+    // Middle of sphere
+    for (currentStack = 0; currentStack < sphereStacks - 1; currentStack++) {
+        int nextStack = currentStack + 1;
+
+        for (currentSector = 0; currentSector < sphereSectors; currentSector++) {
+            int nextSector = (currentSector == sphereSectors - 1) ? 0 : currentSector + 1; // This layer
+
+            // Array positions of corners of current rectangle
+            int p1 = currentStack * sphereSectors + currentSector + 1; // Bottom left corner
+            int p2 = currentStack * sphereSectors + nextSector + 1; // Bottom right corner
+            int p3 = nextStack * sphereSectors + currentSector + 1; // Top left corner
+            int p4 = nextStack * sphereSectors + nextSector + 1; // Top right corner
+
+            // First triangle
+            sphereIndexArray[positionInIndexArray++] = p3;
+            sphereIndexArray[positionInIndexArray++] = p2;
+            sphereIndexArray[positionInIndexArray++] = p1;
+            computeNormals(p3, p2, p1);
+
+            // Second triangle
+            sphereIndexArray[positionInIndexArray++] = p2;
+            sphereIndexArray[positionInIndexArray++] = p3;
+            sphereIndexArray[positionInIndexArray++] = p4;
+            computeNormals(p2, p3, p4);
+        }
+    }
+
+    // Top of sphere
+    for (currentSector = 0; currentSector < sphereSectors; currentSector++) {
+        int nextSector = (currentSector == sphereSectors - 1) ? 0 : currentSector + 1; // Highest layer
+        // sphereStacks - 1 = stack position highest layer
+        // (sphereStacks - 1) * sphereSectors + 1 = array position of first sector of highest layer
+        // (sphereStacks - 1) * sphereSectors + currentSector + 1 = array position of current sector in highest layer
+        int p1 = (sphereStacks - 1) * sphereSectors + currentSector + 1, p2 = (sphereStacks - 1) * sphereSectors + nextSector + 1; // indices of relevant vertices in vertex array
+
+        // Triange facing up
+        sphereIndexArray[positionInIndexArray++] = sphereStacks * sphereSectors + 1; // Highest point
+        sphereIndexArray[positionInIndexArray++] = p2;
+        sphereIndexArray[positionInIndexArray++] = p1;
+        computeNormals(sphereStacks * sphereSectors + 1, p2, p1);
+    }
+}
+
+struct SphereData { GLuint VAO, VBO, EBO; } bindSphereVAO() {
+    
+    SphereData data;
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Create a vertex array
+    GLuint VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    // Upload Vertex Buffer to the GPU, keep a reference to it (vertexBufferObject)
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sphereVertexArray), sphereVertexArray, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), (void*)0); // attribute 0 = aPos
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), (void*)sizeof(glm::vec3)); // attribute 2 = aTexCoords
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(glm::vec3), (void*)(2 * sizeof(glm::vec3))); // attribute 1 = aNormal
+    glEnableVertexAttribArray(2);
+
+    // Upload Index Buffer to the GPU
+    GLuint EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphereIndexArray), sphereIndexArray, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // Return three values for VAO, VBO and EAO
+    data.VBO = VBO;
+    data.VAO = VAO;
+    data.EBO = EBO;
+
+    return data;
+}
 
 
 int Assignment2(GLFWwindow* window)
@@ -256,6 +404,10 @@ int Assignment2(GLFWwindow* window)
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
+    // Sphere
+    defineSphereVertexArray();
+    defineSphereIndexArray();
+    SphereData sphere = bindSphereVAO();
 
 
     glEnable(GL_DEPTH_TEST);
@@ -1361,6 +1513,28 @@ int Assignment2(GLFWwindow* window)
 
         }
 
+
+        // Sphere
+        
+        if (true) {
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+
+            // Texture
+            // TODO: apply texture on tennis ball
+
+            // World orientation
+            glm::mat4 worldMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(20.0f, 0.0f, -10.0f)));
+            shadow.setVec3("trueColor", glm::vec3(0.5f, 0.0f, 1.0f));
+            shadow.setMat4("model", worldMatrix);
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
 
         // check and call events (poll IO) and swap the buffers
         glfwPollEvents();
