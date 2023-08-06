@@ -59,7 +59,14 @@ Yaw right: RIGHT
 Pitch up: UP
 Pitch down: DOWN
 
-**NOTE THAT PITCHING AND YAWING CURRENTLY HAS SOME ISSUES WHEN THE WORLD IS ROTATED (Y axis is not pointing straight up).**
-**I have some ideas as to what might be the cause and how to fix it**
+ENTER to change which model is being controlled
+Draw mode:
+Trangles: 3
+Lines: 4
+Points: 5
+
+Toggle shadows: P
+
+Toggle textures: 6
 
 Push ESC to close the openGL window

@@ -39,7 +39,7 @@ const float cameraMoveSpeed = 0.5f;
 const float cameraAngleSpeed = 0.95f;
 
 // name order within the position/rotation arrays
-// Craig, Sergio ???, ???, ???
+// Craig, Sergio Afaf ???, ???
 
 // world rotations
 float rotationx = 0.0f;
@@ -102,6 +102,16 @@ const int sphereStacks = 128; // Number of horizontal cuts
 const int sphereSectors = 256; // Number of vertical cuts
 glm::vec3 sphereVertexArray[3 * (sphereStacks * sphereSectors + 2)]; // List of all vertices
 unsigned int sphereIndexArray[6 * sphereSectors * sphereStacks]; // Order of vertices for EBO
+
+
+// Afaf's global variables 
+// starting points of model
+float modelPositionX = 0.267f;
+float modelPositionY = 0.01f;
+float modelPositionZ = -0.5f;
+
+//global afaf cube VAO
+unsigned int afafCubeVAO;
 
 // Instantiates all position and texture position values for the sphereVertexArray for given stacks and sectors
 void defineSphereVertexArray() {
@@ -269,56 +279,11 @@ int Assignment2(GLFWwindow* window)
         0.0f, 0.0f,  50.0f, 0.0f, 1.0f, 0.0f
     };
 
-    // 5 - unit cube (base building block for model)
-    float unitCube2[] =
+    // 3 - vertical net bits
+    float netLines[] =
     {
-        // XY primary (back face)
-        -1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-         1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-         1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
-         1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-        -1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-        -1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-
-        // ZY primary (left face)
-        -1.0f,  2.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-        -1.0f,  2.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-        -1.0f,  0.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-        -1.0f,  0.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-        -1.0f,  0.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-        -1.0f,  2.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-
-        // XZ primary (bottom face)
-        -1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-         1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-         1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-         1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-        -1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-        -1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-
-        // XY secondary (front face)
-        -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-         1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-         1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-         1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-        -1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-        -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-
-        // ZY secondary (right face)
-         1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-         1.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-         1.0f,  2.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
-         1.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-         1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-         1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
-
-        // XZ secondary (top face)
-        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-         1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-         1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right  
-         1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-        -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
+        0.0f, 0.0f, 0.0f, 0.0f, 0.8f, 0.0f,
+        0.0f, 10.0f, 0.0f, 0.0f, 0.8f, 0.0f
     };
 
     // 4 - unit cube (base building block for model)
@@ -373,12 +338,113 @@ int Assignment2(GLFWwindow* window)
        -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
     };
 
-    // 3 - vertical net bits
-    float netLines[] =
+    // 5 - unit cube (base building block for model)
+    float unitCube2[] =
     {
-        0.0f, 0.0f, 0.0f, 0.0f, 0.8f, 0.0f,
-        0.0f, 10.0f, 0.0f, 0.0f, 0.8f, 0.0f
+        // XY primary (back face)
+        -1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+         1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+         1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+         1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
+        -1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+        -1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+
+        // ZY primary (left face)
+        -1.0f,  2.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+        -1.0f,  2.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
+        -1.0f,  0.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+        -1.0f,  0.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
+        -1.0f,  0.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+        -1.0f,  2.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+
+        // XZ primary (bottom face)
+        -1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+         1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
+         1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+         1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
+        -1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+        -1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+
+        // XY secondary (front face)
+        -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+         1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
+         1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+         1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
+        -1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
+        -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+
+        // ZY secondary (right face)
+         1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+         1.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+         1.0f,  2.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right
+         1.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
+         1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
+         1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
+
+        // XZ secondary (top face)
+        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+         1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+         1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right  
+         1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+        -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
     };
+
+
+    float vertexArray[] = {
+
+        // back face
+        // position				//normals			//texture coords
+      -0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
+       0.5f,  0.5f, -0.5f,  	0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+       0.5f,  0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+      -0.5f,  0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,  0.0f, 0.0f,
+
+      // front face
+      -0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+       0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
+       0.5f,  0.5f,  0.5f,	    0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+       0.5f,  0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+      -0.5f,  0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
+      -0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+
+      //left face
+      -0.5f,  0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,
+      -0.5f,  0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,
+      -0.5f, -0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 1.0f,
+      -0.5f,  0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,
+
+      // right face
+       0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+       0.5f,  0.5f, -0.5f,	    1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+       0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+       0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+
+       // bottom face 
+      -0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
+       0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
+       0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
+      -0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
+      -0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+
+      // top face
+      -0.5f,  0.5f, -0.5f,   	0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
+       0.5f,  0.5f, -0.5f,	    0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
+       0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
+       0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
+      -0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,
+      -0.5f,  0.5f, -0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f
+
+
+    };
+
 
     unsigned int VBOs[6], VAOs[6];
     glGenVertexArrays(6, VAOs);
@@ -433,6 +499,38 @@ int Assignment2(GLFWwindow* window)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); //6
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+
+
+    unsigned int afafVAO;
+    unsigned int afafVBO;
+
+
+
+
+    glGenVertexArrays(1, &afafVAO);
+    glBindVertexArray(afafVAO);
+
+
+    glGenBuffers(1, &afafVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, afafVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 3));
+    glEnableVertexAttribArray(1);
+
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 6));
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
 
     // Sphere
     defineSphereVertexArray();
@@ -637,6 +735,8 @@ int Assignment2(GLFWwindow* window)
 
 
     lightPos = glm::vec3(0.0f, 5.0f, 5.0f);
+
+    glm::mat4 modelHierarchyMatrix = glm::mat4(1.0f);
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -1262,6 +1362,118 @@ int Assignment2(GLFWwindow* window)
 
         }
 
+        baseModelMat = safeBaseModelMat;
+
+        // Afaf
+        if (true) {
+            glBindVertexArray(afafVAO);
+
+            glm::mat4 shoulderPartMatrix1 = safeBaseModelMat;
+            shoulderPartMatrix1 = glm::translate(glm::mat4(1.0f), glm::vec3(modelPositionX + racketposx[2], modelPositionY + racketposy[2], modelPositionZ + racketposz[2]));
+            glm::mat4 shoulderPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(-16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[2]), glm::vec3(0.0, 1.0, 0.0));
+            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
+            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
+            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
+            glm::mat4 shoulderScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.03f + scaleFactor[2], 0.03f + scaleFactor[2], 0.035f));
+            glm::mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
+            modelHierarchyMatrix = shoulderMatrix;
+
+            firstPass.setMat4("model", modelHierarchyMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            glm::mat4 afafSphereMat = shoulderPartMatrix1 * rotationMatrix;
+            afafSphereMat = glm::translate(afafSphereMat, glm::vec3(0.0f, 8.0f, 5.0f));
+            firstPass.setMat4("model", afafSphereMat);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+
+            glBindVertexArray(afafVAO);
+
+
+
+            // Lower arm (the lower arm appearing in window - not in reality) 
+            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 1.0f));
+            glm::mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
+
+            firstPass.setMat4("model", lowerArmWorld);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // elbow - the second join. The racket and upper arm are connected to it as well
+           // when I mean upper, I mean the upper arm appearing on the screen / window 
+            glm::mat4 elbowPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.01f, 2.8f, 0.0f));
+            glm::mat4 elbowPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 elbowXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
+            glm::mat4 elbowYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[2]), glm::vec3(0.0, 1.0, 0.0));
+            glm::mat4 elbowZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
+            glm::mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
+            glm::mat4 elbowScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
+            glm::mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
+
+            firstPass.setMat4("model", elbow);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // upper arm 
+            glm::mat4 upperArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.2f, 0.0f));
+            glm::mat4 upperScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 7.5f, 1.0f));
+            glm::mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
+            firstPass.setMat4("model", upperArm);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+            // Handle 
+            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 13.0, 0.0f));
+            glm::mat4 handleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 9.5f, 0.3f));
+            glm::mat4 handleXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[2]), glm::vec3(1.0, 0.0, 0.0));
+            glm::mat4 handleYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[2]), glm::vec3(0.0, 1.0, 0.0));
+            glm::mat4 handleZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[2]), glm::vec3(0.0, 0.0, 1.0));
+            glm::mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
+            glm::mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale;
+            firstPass.setMat4("model", handleMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+            // Racket net
+            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.8f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(9.5f, 1.0f, 0.1f));
+            glm::mat4 netMatrix = handleMatrix * NetPartMatrix;
+            firstPass.setMat4("model", netMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // right tube
+            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.8f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
+            glm::mat4 rightMatrix = handleMatrix * rightPartMatrix;
+            firstPass.setMat4("model", rightMatrix);
+            //   shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // left tube
+            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.8f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
+            glm::mat4 leftMatrix = handleMatrix * leftPartMatrix;
+            firstPass.setMat4("model", leftMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // make sure to unbind my cubeVAO
+
+        }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1944,8 +2156,131 @@ int Assignment2(GLFWwindow* window)
 
         }
 
+        baseModelMat = safeBaseModelMat;
+        glBindTexture(GL_TEXTURE_2D, white);
 
-        
+        // Afaf 
+        if (true) {
+            glBindVertexArray(afafVAO);
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.84f, 0.7f));
+
+
+            glm::mat4 shoulderPartMatrix1 = safeBaseModelMat;
+            shoulderPartMatrix1 = glm::translate(glm::mat4(1.0f), glm::vec3(modelPositionX + racketposx[2], modelPositionY + racketposy[2], modelPositionZ + racketposz[2]));
+            glm::mat4 shoulderPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(-16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[2]), glm::vec3(0.0, 1.0, 0.0));
+            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
+            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
+            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
+            glm::mat4 shoulderScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.03f + scaleFactor[2], 0.03f + scaleFactor[2], 0.035f));
+            glm::mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
+            modelHierarchyMatrix = shoulderMatrix;
+
+            glm::mat4 afafSphereMat = shoulderPartMatrix1 * rotationMatrix;
+            shadow.setMat4("model", shoulderPartMatrix1);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            afafSphereMat = glm::translate(afafSphereMat, glm::vec3(0.0f, 8.0f, 5.0f));
+            shadow.setMat4("model", afafSphereMat);
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+
+            glBindVertexArray(afafVAO);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, white);
+            }
+
+
+            // Lower arm (the lower arm appearing in window - not in reality) 
+            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 1.0f));
+            glm::mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
+
+            shadow.setMat4("model", lowerArmWorld);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // elbow - the second join. The racket and upper arm are connected to it as well
+           // when I mean upper, I mean the upper arm appearing on the screen / window 
+            glm::mat4 elbowPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.01f, 2.8f, 0.0f));
+            glm::mat4 elbowPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 elbowXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
+            glm::mat4 elbowYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[2]), glm::vec3(0.0, 1.0, 0.0));
+            glm::mat4 elbowZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
+            glm::mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
+            glm::mat4 elbowScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
+            glm::mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
+
+            shadow.setMat4("model", elbow);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // upper arm 
+            glm::mat4 upperArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.2f, 0.0f));
+            glm::mat4 upperScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 7.5f, 1.0f));
+            glm::mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
+            shadow.setMat4("model", upperArm);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
+
+            // Handle 
+            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 13.0, 0.0f));
+            glm::mat4 handleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 9.5f, 0.3f));
+            glm::mat4 handleXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[2]), glm::vec3(1.0, 0.0, 0.0));
+            glm::mat4 handleYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[2]), glm::vec3(0.0, 1.0, 0.0));
+            glm::mat4 handleZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[2]), glm::vec3(0.0, 0.0, 1.0));
+            glm::mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
+            glm::mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale;
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
+            shadow.setMat4("model", handleMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+            // Racket net
+            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.8f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(9.5f, 1.0f, 0.1f));
+            glm::mat4 netMatrix = handleMatrix * NetPartMatrix;
+            shadow.setMat4("model", netMatrix);
+            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.5f, 0.3f));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // right tube
+            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.8f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
+            glm::mat4 rightMatrix = handleMatrix * rightPartMatrix;
+            shadow.setMat4("model", rightMatrix);
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // left tube
+            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.8f, 0.0f))
+                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
+            glm::mat4 leftMatrix = handleMatrix * leftPartMatrix;
+            shadow.setMat4("model", leftMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // make sure to unbind my cubeVAO
+
+        }
+
 
         // check and call events (poll IO) and swap the buffers
         glfwPollEvents();
@@ -2448,7 +2783,7 @@ void processInput(GLFWwindow* window)
                 std::cout << "Sergio's model selected!" << std::endl;
                 break;
             case 2:
-                std::cout << "2's model selected!" << std::endl;
+                std::cout << "Afaf's model selected!" << std::endl;
                 break;
             case 3:
                 std::cout << "3's model selected!" << std::endl;
