@@ -95,6 +95,8 @@ float modelPositionX = 0.267f;
 float modelPositionY = 0.01f;
 float modelPositionZ = -0.5f;
 
+//global afaf cube VAO
+int afafCubeVAO;
 
 
 
@@ -102,93 +104,6 @@ float modelPositionZ = -0.5f;
 
 int Assignment2(GLFWwindow* window)
 {
-
-    // Afaf's unit cube
-    int afafCube()
-    {
-        //1.0f, 0.84f, 0.7f,
-        float vertexArray[] = {
-
-            // back face
-            // position			//color				//normals			//texture coords
-          -0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
-           0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
-           0.5f,  0.5f, -0.5f,  	0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
-           0.5f,  0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
-          -0.5f,  0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
-          -0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,  0.0f, 0.0f,
-
-          // front face
-          -0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
-           0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
-           0.5f,  0.5f,  0.5f,	    0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
-           0.5f,  0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
-          -0.5f,  0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
-          -0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
-
-          //left face
-          -0.5f,  0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,
-          -0.5f,  0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 0.0f,
-          -0.5f, -0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,
-          -0.5f, -0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,
-          -0.5f, -0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 1.0f,
-          -0.5f,  0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,
-
-          // right face
-           0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-           0.5f,  0.5f, -0.5f,	    1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-           0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
-           0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
-           0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
-           0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-
-           // bottom face 
-          -0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
-           0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
-           0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
-           0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
-          -0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
-          -0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
-
-          // top face
-          -0.5f,  0.5f, -0.5f,   	0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
-           0.5f,  0.5f, -0.5f,	    0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
-           0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
-           0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
-          -0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,
-          -0.5f,  0.5f, -0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f
-
-
-        };
-
-
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-
-
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
-
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 3));
-        glEnableVertexAttribArray(1);
-
-
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 6));
-        glEnableVertexAttribArray(2);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-
-        return VAO;
-    }
-
-
 
 
     Shader firstPass("firstPass.vs", "firstPass.fs");
@@ -493,6 +408,101 @@ int Assignment2(GLFWwindow* window)
 
         // the 'if (true)' statements are there just so that the code can be collapsed
 
+
+
+        if (true) {
+            // AFAF SECTION 
+            afafCubeVAO = afafCube();
+            glBindVertexArray(afafCubeVAO);
+          
+            mat4 shoulderPartMatrix1 = translate(mat4(1.0f), vec3(modelPositionX, modelPositionY, modelPositionZ));
+            mat4 shoulderPartMatrix2 = rotate(mat4(1.0f), radians(-16.18f), vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[controller]), vec3(0.0, 1.0, 0.0));
+            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[controller]), vec3(0.0, 0.0, 1.0));
+            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[controller]), vec3(1.0, 0.0, 0.0));
+            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
+            mat4 shoulderScale = scale(mat4(1.0f), vec3(0.03f + scaleFactor[controller], 0.03f + scaleFactor[controller], 0.035f));
+            mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
+            modelHierarchyMatrix = shoulderMatrix;
+
+            firstPass.setMat4("model", modelHierarchyMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // Lower arm (the lower arm appearing in window - not in reality) 
+            mat4 lowerArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, 0.0f));
+            mat4 lowerScale = scale(mat4(1.0f), vec3(1.0f, 3.5f, 1.0f));
+            mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
+
+            firstPass.setMat4("model", lowerArmWorld);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // elbow - the second join. The racket and upper arm are connected to it as well
+           // when I mean upper, I mean the upper arm appearing on the screen / window 
+            mat4 elbowPartMatrix = translate(mat4(1.0f), vec3(-0.01f, 2.8f, 0.0f));
+            mat4 elbowPartMatrix2 = rotate(mat4(1.0f), radians(16.18f), vec3(0.0f, 0.0f, 1.0f));
+            mat4 elbowXRotation = rotate(mat4(1.0f), radians(uarmrotx[controller]), vec3(1.0, 0.0, 0.0));
+            mat4 elbowYRotation = rotate(mat4(1.0f), radians(uarmroty[controller]), vec3(0.0, 1.0, 0.0));
+            mat4 elbowZRotation = rotate(mat4(1.0f), radians(uarmrotz[controller]), vec3(0.0, 0.0, 1.0));
+            mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
+            mat4 elbowScale = scale(mat4(1.0f), vec3(1.0f, 0.5f, 1.0f));
+            mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
+
+            firstPass.setMat4("model", elbow);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // upper arm 
+            mat4 upperArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 4.2f, 0.0f));
+            mat4 upperScale = scale(mat4(1.0f), vec3(1.0f, 7.5f, 1.0f));
+            mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
+            firstPass.setMat4("model", upperArm);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+            // Handle 
+            mat4 handlePartMatrix = translate(mat4(1.0f), vec3(0.0f, 13.0, 0.0f));
+            mat4 handleScale = scale(mat4(1.0f), vec3(0.3f, 9.5f, 0.3f));
+            mat4 handleXRotation = rotate(mat4(1.0f), radians(racketrotx[controller]), vec3(1.0, 0.0, 0.0));
+            mat4 handleYRotation = rotate(mat4(1.0f), radians(racketroty[controller]), vec3(0.0, 1.0, 0.0));
+            mat4 handleZRotation = rotate(mat4(1.0f), radians(racketrotz[controller]), vec3(0.0, 0.0, 1.0));
+            mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
+            mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale; 
+            firstPass.setMat4("model", handleMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+            // Racket net
+            mat4 NetPartMatrix = translate(mat4(1.0f), vec3(0.0f, 0.8f, 0.0f))
+                * scale(mat4(1.0f), vec3(9.5f, 1.0f, 0.1f));
+            mat4 netMatrix = handleMatrix * NetPartMatrix;
+            firstPass.setMat4("model", netMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // right tube
+            mat4 rightPartMatrix = translate(mat4(1.0f), vec3(4.6f, 0.8f, 0.0f))
+                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
+            mat4 rightMatrix = handleMatrix * rightPartMatrix;
+            firstPass.setMat4("model", rightMatrix);
+         //   shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // left tube
+            mat4 leftPartMatrix = translate(mat4(1.0f), vec3(-4.6f, 0.8f, 0.0f))
+                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
+            mat4 leftMatrix = handleMatrix * leftPartMatrix;
+            firstPass.setMat4("model", leftMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // make sure to unbind my cubeVAO
+
+        }
+
+
+
         if (true)
         {
             baseModelMat = glm::mat4(1.0f);
@@ -552,104 +562,7 @@ int Assignment2(GLFWwindow* window)
 
 
 
-            // AFAF SECTION 
-            int afafCubeVAO = afafCube();
-            glBindVertexArray(afafCubeVAO);
-            shader.setVec3("trueColor", glm::vec3(1.0f, 0.84f, 0.7f));
-
-
-
-            mat4 shoulderPartMatrix1 = translate(mat4(1.0f), vec3(modelPositionX, modelPositionY, modelPositionZ));
-            mat4 shoulderPartMatrix2 = rotate(mat4(1.0f), radians(-16.18f), vec3(0.0f, 0.0f, 1.0f));
-            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[controller]), vec3(0.0, 1.0, 0.0));
-            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[controller]), vec3(0.0, 0.0, 1.0));
-            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[controller]), vec3(1.0, 0.0, 0.0));
-            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
-            mat4 shoulderScale = scale(mat4(1.0f), vec3(0.03f + scaleFactor[controller], 0.03f + scaleFactor[controller], 0.035f));
-            mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
-            modelHierarchyMatrix = shoulderMatrix;
-
-            firstPass.setMat4("model", modelHierarchyMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Lower arm (the lower arm appearing in window - not in reality) 
-            mat4 lowerArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, 0.0f));
-            mat4 lowerScale = scale(mat4(1.0f), vec3(1.0f, 3.5f, 1.0f));
-            mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
-
-            firstPass.setMat4("model", lowerArmWorld);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // elbow - the second join. The racket and upper arm are connected to it as well
-           // when I mean upper, I mean the upper arm appearing on the screen / window 
-            mat4 elbowPartMatrix = translate(mat4(1.0f), vec3(-0.01f, 2.8f, 0.0f));
-            mat4 elbowPartMatrix2 = rotate(mat4(1.0f), radians(16.18f), vec3(0.0f, 0.0f, 1.0f));
-            mat4 elbowXRotation = rotate(mat4(1.0f), radians(uarmrotx[controller]), vec3(1.0, 0.0, 0.0));
-            mat4 elbowYRotation = rotate(mat4(1.0f), radians(uarmroty[controller]), vec3(0.0, 1.0, 0.0));
-            mat4 elbowZRotation = rotate(mat4(1.0f), radians(uarmrotz[controller]), vec3(0.0, 0.0, 1.0));
-            mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
-            mat4 elbowScale = scale(mat4(1.0f), vec3(1.0f, 0.5f, 1.0f));
-            mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
-
-            firstPass.setMat4("model", elbow);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper arm 
-            mat4 upperArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 4.2f, 0.0f));
-            mat4 upperScale = scale(mat4(1.0f), vec3(1.0f, 7.5f, 1.0f));
-            mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
-            firstPass.setMat4("model", upperArm);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Handle 
-            mat4 handlePartMatrix = translate(mat4(1.0f), vec3(0.0f, 13.0, 0.0f));
-            mat4 handleScale = scale(mat4(1.0f), vec3(0.3f, 9.5f, 0.3f));
-            mat4 handleXRotation = rotate(mat4(1.0f), radians(racketrotx[controller]), vec3(1.0, 0.0, 0.0));
-            mat4 handleYRotation = rotate(mat4(1.0f), radians(racketroty[controller]), vec3(0.0, 1.0, 0.0));
-            mat4 handleZRotation = rotate(mat4(1.0f), radians(racketrotz[controller]), vec3(0.0, 0.0, 1.0));
-            mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
-            mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale;
-            shader.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
-            firstPass.setMat4("model", handleMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Racket net
-            mat4 NetPartMatrix = translate(mat4(1.0f), vec3(0.0f, 0.8f, 0.0f))
-                * scale(mat4(1.0f), vec3(9.5f, 1.0f, 0.1f));
-            mat4 netMatrix = handleMatrix * NetPartMatrix;
-            firstPass.setMat4("model", netMatrix);
-            shader.setVec3("trueColor", glm::vec3(0.0f, 0.5f, 0.3f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper tube
-            mat4 UpperPartMatrix = translate(mat4(1.0f), vec3(4.6f, 0.8f, 0.0f))
-                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
-            mat4 FinalMatrix = handleMatrix * UpperPartMatrix;
-            firstPass.setMat4("model", FinalMatrix);
-            shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper tube
-            mat4 Upper2PartMatrix = translate(mat4(1.0f), vec3(-4.6f, 0.8f, 0.0f))
-                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
-            mat4 Final2Matrix = handleMatrix * Upper2PartMatrix;
-            firstPass.setMat4("model", Final2Matrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // make sure to unbind my cubeVAO
-
-
-
-
-
-            // CRAIG SECTION
+     
             // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
             // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
             // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
@@ -822,13 +735,110 @@ int Assignment2(GLFWwindow* window)
         glBindTexture(GL_TEXTURE_2D, depthMap);
 
 
+        // AFAF SECTION 
+        if (true) {
+
+            afafCubeVAO = afafCube();
+            glBindVertexArray(afafCubeVAO);
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.84f, 0.7f));
+
+
+
+            mat4 shoulderPartMatrix1 = translate(mat4(1.0f), vec3(modelPositionX, modelPositionY, modelPositionZ));
+            mat4 shoulderPartMatrix2 = rotate(mat4(1.0f), radians(-16.18f), vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[controller]), vec3(0.0, 1.0, 0.0));
+            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[controller]), vec3(0.0, 0.0, 1.0));
+            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[controller]), vec3(1.0, 0.0, 0.0));
+            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
+            mat4 shoulderScale = scale(mat4(1.0f), vec3(0.03f + scaleFactor[controller], 0.03f + scaleFactor[controller], 0.035f));
+            mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
+            modelHierarchyMatrix = shoulderMatrix;
+
+            shadow.setMat4("model", modelHierarchyMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // Lower arm (the lower arm appearing in window - not in reality) 
+            mat4 lowerArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, 0.0f));
+            mat4 lowerScale = scale(mat4(1.0f), vec3(1.0f, 3.5f, 1.0f));
+            mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
+
+            shadow.setMat4("model", lowerArmWorld);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // elbow - the second join. The racket and upper arm are connected to it as well
+           // when I mean upper, I mean the upper arm appearing on the screen / window 
+            mat4 elbowPartMatrix = translate(mat4(1.0f), vec3(-0.01f, 2.8f, 0.0f));
+            mat4 elbowPartMatrix2 = rotate(mat4(1.0f), radians(16.18f), vec3(0.0f, 0.0f, 1.0f));
+            mat4 elbowXRotation = rotate(mat4(1.0f), radians(uarmrotx[controller]), vec3(1.0, 0.0, 0.0));
+            mat4 elbowYRotation = rotate(mat4(1.0f), radians(uarmroty[controller]), vec3(0.0, 1.0, 0.0));
+            mat4 elbowZRotation = rotate(mat4(1.0f), radians(uarmrotz[controller]), vec3(0.0, 0.0, 1.0));
+            mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
+            mat4 elbowScale = scale(mat4(1.0f), vec3(1.0f, 0.5f, 1.0f));
+            mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
+
+            shadow.setMat4("model", elbow);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // upper arm 
+            mat4 upperArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 4.2f, 0.0f));
+            mat4 upperScale = scale(mat4(1.0f), vec3(1.0f, 7.5f, 1.0f));
+            mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
+            shadow.setMat4("model", upperArm);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+            // Handle 
+            mat4 handlePartMatrix = translate(mat4(1.0f), vec3(0.0f, 13.0, 0.0f));
+            mat4 handleScale = scale(mat4(1.0f), vec3(0.3f, 9.5f, 0.3f));
+            mat4 handleXRotation = rotate(mat4(1.0f), radians(racketrotx[controller]), vec3(1.0, 0.0, 0.0));
+            mat4 handleYRotation = rotate(mat4(1.0f), radians(racketroty[controller]), vec3(0.0, 1.0, 0.0));
+            mat4 handleZRotation = rotate(mat4(1.0f), radians(racketrotz[controller]), vec3(0.0, 0.0, 1.0));
+            mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
+            mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale;
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
+            shadow.setMat4("model", handleMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+            // Racket net
+            mat4 NetPartMatrix = translate(mat4(1.0f), vec3(0.0f, 0.8f, 0.0f))
+                * scale(mat4(1.0f), vec3(9.5f, 1.0f, 0.1f));
+            mat4 netMatrix = handleMatrix * NetPartMatrix;
+            shadow.setMat4("model", netMatrix);
+            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.5f, 0.3f));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // right tube
+            mat4 rightPartMatrix = translate(mat4(1.0f), vec3(4.6f, 0.8f, 0.0f))
+                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
+            mat4 rightMatrix = handleMatrix * rightPartMatrix;
+            shadow.setMat4("model", rightMatrix);
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            // left tube
+            mat4 leftPartMatrix = translate(mat4(1.0f), vec3(-4.6f, 0.8f, 0.0f))
+                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
+            mat4 leftMatrix = handleMatrix * leftPartMatrix;
+            shadow.setMat4("model", leftMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // make sure to unbind my cubeVAO
+
+        }
+
+
+
+
+
+
         if (true)
         {
-
-
-
-
-
 
             baseModelMat = glm::mat4(1.0f);
             baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationx), glm::vec3(1.0f, 0.0f, 0.0f)); // rotate on true X
@@ -910,109 +920,7 @@ int Assignment2(GLFWwindow* window)
             }
 
 
-            // AFAF SECTION 2 
-               // AFAF SECTION 
-
-
-            // make sure to unbind my VAO afterwards
-            int afafCubeVAO = afafCube();
-            glBindVertexArray(afafCubeVAO);
-
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.84f, 0.7f));
-
-
-
-            mat4 shoulderPartMatrix1 = translate(mat4(1.0f), vec3(modelPositionX, modelPositionY, modelPositionZ));
-            mat4 shoulderPartMatrix2 = rotate(mat4(1.0f), radians(-16.18f), vec3(0.0f, 0.0f, 1.0f));
-            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[controller]), vec3(0.0, 1.0, 0.0));
-            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[controller]), vec3(0.0, 0.0, 1.0));
-            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[controller]), vec3(1.0, 0.0, 0.0));
-            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
-            mat4 shoulderScale = scale(mat4(1.0f), vec3(0.03f + scaleFactor[controller], 0.03f + scaleFactor[controller], 0.035f));
-            mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
-            modelHierarchyMatrix = shoulderMatrix;
-
-            shadow.setMat4("model", modelHierarchyMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Lower arm (the lower arm appearing in window - not in reality) 
-            mat4 lowerArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, 0.0f));
-            mat4 lowerScale = scale(mat4(1.0f), vec3(1.0f, 3.5f, 1.0f));
-            mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
-
-            shadow.setMat4("model", lowerArmWorld);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // elbow - the second join. The racket and upper arm are connected to it as well
-           // when I mean upper, I mean the upper arm appearing on the screen / window 
-            mat4 elbowPartMatrix = translate(mat4(1.0f), vec3(-0.01f, 2.8f, 0.0f));
-            mat4 elbowPartMatrix2 = rotate(mat4(1.0f), radians(16.18f), vec3(0.0f, 0.0f, 1.0f));
-            mat4 elbowXRotation = rotate(mat4(1.0f), radians(uarmrotx[controller]), vec3(1.0, 0.0, 0.0));
-            mat4 elbowYRotation = rotate(mat4(1.0f), radians(uarmroty[controller]), vec3(0.0, 1.0, 0.0));
-            mat4 elbowZRotation = rotate(mat4(1.0f), radians(uarmrotz[controller]), vec3(0.0, 0.0, 1.0));
-            mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
-            mat4 elbowScale = scale(mat4(1.0f), vec3(1.0f, 0.5f, 1.0f));
-            mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
-
-            shadow.setMat4("model", elbow);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper arm 
-            mat4 upperArmPartMatrix = translate(mat4(1.0f), vec3(0.0f, 4.2f, 0.0f));
-            mat4 upperScale = scale(mat4(1.0f), vec3(1.0f, 7.5f, 1.0f));
-            mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
-            shadow.setMat4("model", upperArm);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Handle 
-            mat4 handlePartMatrix = translate(mat4(1.0f), vec3(0.0f, 13.0, 0.0f));
-            mat4 handleScale = scale(mat4(1.0f), vec3(0.3f, 9.5f, 0.3f));
-            mat4 handleXRotation = rotate(mat4(1.0f), radians(racketrotx[controller]), vec3(1.0, 0.0, 0.0));
-            mat4 handleYRotation = rotate(mat4(1.0f), radians(racketroty[controller]), vec3(0.0, 1.0, 0.0));
-            mat4 handleZRotation = rotate(mat4(1.0f), radians(racketrotz[controller]), vec3(0.0, 0.0, 1.0));
-            mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
-            mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale;
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
-            shadow.setMat4("model", handleMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Racket net
-            mat4 NetPartMatrix = translate(mat4(1.0f), vec3(0.0f, 0.8f, 0.0f))
-                * scale(mat4(1.0f), vec3(9.5f, 1.0f, 0.1f));
-            mat4 netMatrix = handleMatrix * NetPartMatrix;
-            shadow.setMat4("model", netMatrix);
-            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.5f, 0.3f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper tube
-            mat4 UpperPartMatrix = translate(mat4(1.0f), vec3(4.6f, 0.8f, 0.0f))
-                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
-            mat4 FinalMatrix = handleMatrix * UpperPartMatrix;
-            shadow.setMat4("model", FinalMatrix);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper tube
-            mat4 Upper2PartMatrix = translate(mat4(1.0f), vec3(-4.6f, 0.8f, 0.0f))
-                * scale(mat4(1.0f), vec3(0.5f, 1.0f, 0.3f));
-            mat4 Final2Matrix = handleMatrix * Upper2PartMatrix;
-            shadow.setMat4("model", Final2Matrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // make sure to unbind my cubeVAO
-
-
-
-
-
-
+           
 
             //shader.use();
 
@@ -1672,6 +1580,90 @@ unsigned int loadTexture(char const* path)
     return textureID;
 }
 
+// Afaf's unit cube
+int afafCube()
+{
+    
+    float vertexArray[] = {
+
+        // back face
+        // position				//normals			//texture coords
+      -0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	0.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
+       0.5f,  0.5f, -0.5f,  	0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+       0.5f,  0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 1.0f,
+      -0.5f,  0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	1.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,  0.0f, 0.0f,
+
+      // front face
+      -0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+       0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
+       0.5f,  0.5f,  0.5f,	    0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+       0.5f,  0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	1.0f, 1.0f,
+      -0.5f,  0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
+      -0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+
+      //left face
+      -0.5f,  0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,
+      -0.5f,  0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,
+      -0.5f, -0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 0.0f, 1.0f,
+      -0.5f,  0.5f,  0.5f,		-1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,
+
+      // right face
+       0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+       0.5f,  0.5f, -0.5f,	    1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+       0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+       0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+
+       // bottom face 
+      -0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+       0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
+       0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
+       0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	1.0f, 1.0f,
+      -0.5f, -0.5f,  0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 1.0f,
+      -0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+
+      // top face
+      -0.5f,  0.5f, -0.5f,   	0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
+       0.5f,  0.5f, -0.5f,	    0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
+       0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
+       0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
+      -0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 1.0f,
+      -0.5f,  0.5f, -0.5f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f
+
+
+    };
+
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 3));
+    glEnableVertexAttribArray(1);
+
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 6));
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    return VAO;
+}
 
 int main()
 {
@@ -1714,6 +1706,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     int ret = -1;
+   
     ret = Assignment2(window);
     std::cout << "Closed sucessfully!" << std::endl;
     return ret;
