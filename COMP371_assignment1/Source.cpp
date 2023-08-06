@@ -61,12 +61,12 @@ const float racketMoveSpeed = 0.5f;
 // lower arm rotations
 float larmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 float larmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-float larmrotz[5] = { 315.0f, 0.0f, 0.0f, 0.0f, 90.0f };
+float larmrotz[5] = { 315.0f, 0.0f, 0.0f, 0.0f, 45.0f };
 
 // upper arm rotations
 float uarmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 float uarmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-float uarmrotz[5] = { 45.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float uarmrotz[5] = { 45.0f, 0.0f, 0.0f, 0.0f, 45.0f };
 
 // racket rotations
 float racketrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
@@ -1613,8 +1613,8 @@ int Assignment2(GLFWwindow* window)
             glm::vec3 upperArmTranslateVector = lowerArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f); // Calculate translation of joint
             glm::mat4 upperArmTranslateMatrix = glm::translate(glm::mat4(1.0f), upperArmTranslateVector);
 
-            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * lowerArmRotate * upperArmRotate
-                * lowerArmScale * upperArmOffset;
+            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * baseModelMat * lowerArmRotate * upperArmRotate
+                                     * lowerArmScale * upperArmOffset;
 
             firstPass.setMat4("model", upperArmMatrix * centerUnitCube);
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -1632,7 +1632,7 @@ int Assignment2(GLFWwindow* window)
             glm::vec3 racketTranslateVector(upperArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f)); // Calculate translation of hand position
             glm::mat4 racketTranslateMatrix(glm::translate(glm::mat4(1.0f), racketTranslateVector));
 
-            glm::mat4 racketMatrix = racketTranslateMatrix * racketRotate * upperArmRotate * lowerArmRotate
+            glm::mat4 racketMatrix = racketTranslateMatrix * baseModelMat * racketRotate * upperArmRotate * lowerArmRotate
                 * lowerArmScale * racketScale * racketOffset;
             firstPass.setMat4("model", racketMatrix * centerUnitCube);
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -2553,7 +2553,7 @@ int Assignment2(GLFWwindow* window)
             glm::vec3 upperArmTranslateVector = lowerArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f); // Calculate translation of joint
             glm::mat4 upperArmTranslateMatrix = glm::translate(glm::mat4(1.0f), upperArmTranslateVector);
 
-            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * lowerArmRotate * upperArmRotate
+            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * baseModelMat * lowerArmRotate * upperArmRotate
                 * lowerArmScale * upperArmOffset;
 
             shadow.setMat4("model", upperArmMatrix * centerUnitCube);
@@ -2572,7 +2572,7 @@ int Assignment2(GLFWwindow* window)
             glm::vec3 racketTranslateVector(upperArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f)); // Calculate translation of hand position
             glm::mat4 racketTranslateMatrix(glm::translate(glm::mat4(1.0f), racketTranslateVector));
 
-            glm::mat4 racketMatrix = racketTranslateMatrix * racketRotate * upperArmRotate * lowerArmRotate
+            glm::mat4 racketMatrix = racketTranslateMatrix * baseModelMat * racketRotate * upperArmRotate * lowerArmRotate
                 * lowerArmScale * racketScale * racketOffset;
             shadow.setMat4("model", racketMatrix * centerUnitCube);
 
