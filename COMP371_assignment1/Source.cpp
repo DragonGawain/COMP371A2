@@ -548,6 +548,31 @@ int Assignment2(GLFWwindow* window)
     stbi_image_free(data);
 
 
+    unsigned int tennisBall;
+    glGenTextures(1, &tennisBall);
+    glBindTexture(GL_TEXTURE_2D, tennisBall);
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // load and generate the texture
+    data = stbi_load("tennisBall.jpg", &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+
     // shadow mapping
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
     unsigned int depthMapFBO;
@@ -1510,7 +1535,11 @@ int Assignment2(GLFWwindow* window)
 
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 5.0f));
             shadow.setMat4("model", baseModelMat);
-            shadow.setVec3("trueColor", glm::vec3(0.1f, 0.9f, 0.1f));
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
 
             // Sphere
             // Sphere VAO, VBO and EBO
@@ -1718,7 +1747,11 @@ int Assignment2(GLFWwindow* window)
             baseModel = glm::translate(baseModel, glm::vec3(0.0f, 4.0f, 3.0f));
             baseModel = glm::scale(baseModel, glm::vec3(0.625f, 0.625f, 0.625f));
             shadow.setMat4("model", baseModel);
-            shadow.setVec3("trueColor", glm::vec3(0.1f, 0.9f, 0.1f));
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
 
             // Sphere
             // Sphere VAO, VBO and EBO
@@ -1731,6 +1764,10 @@ int Assignment2(GLFWwindow* window)
             baseModel = glm::scale(baseModel, glm::vec3(1.6f, 1.6f, 1.6f));
             baseModel = glm::translate(baseModel, glm::vec3(0.0f, -3.0f, -3.0f));
             glBindVertexArray(VAOs[5]);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
 
             //changeTexture(metalTexture);
             // Left Side
@@ -2129,6 +2166,9 @@ void processInput(GLFWwindow* window)
 
         // model selector
         controller = 0;
+        //std::cout << "selectors reset: " << std::endl;
+        //std::cout << "lower arm selected" << std::endl;
+        //std::cout << "Craig's model selected!" << std::endl;
 
     }
 
