@@ -1491,7 +1491,7 @@ int Assignment2(GLFWwindow* window)
             //float gUNIT = float(1) / float(100);
             //float init_size = gUNIT * 2;
             //based on this unit cube
-            float init_size = 1.0f;
+            float init_size = 0.5f;
             //float model_size = init_size*scaleFactor[kpos];
             float arm_size = 2 * init_size;
 
@@ -2782,7 +2782,8 @@ void processInput(GLFWwindow* window)
         larmrotz[0] = 315.0f;
         uarmrotz[0] = 45.0f;
 
-        larmrotz[4] = 90.0f;
+        larmrotz[4] = 45.0f;
+        uarmrotz[4] = 45.0f;
 
         // model position
         racketposx[0] = 0.0f;
