@@ -1569,6 +1569,28 @@ int Assignment2(GLFWwindow* window)
             firstPass.setMat4("model", racketWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f + racketWorldMatrix[3][0], 4.0f + racketWorldMatrix[3][1], 3.0f + racketWorldMatrix[3][2]));
+            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
+            firstPass.setMat4("model", baseModelMat);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+            glBindVertexArray(VAOs[5]);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
+
             //turn it from a sad sticck into a bat at least
             kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0.85* init_size,-0.25*init_size,0));
             kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f,2.0f ));
@@ -2530,6 +2552,29 @@ int Assignment2(GLFWwindow* window)
             shadow.setVec3("trueColor", MIAMI_PINK);
             shadow.setMat4("model", racketWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f + racketWorldMatrix[3][0], 4.0f + racketWorldMatrix[3][1], 3.0f + racketWorldMatrix[3][2]));
+            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
+            shadow.setMat4("model", baseModelMat);
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+            glBindVertexArray(VAOs[5]);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
 
             shadow.setMat4("model", batWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
