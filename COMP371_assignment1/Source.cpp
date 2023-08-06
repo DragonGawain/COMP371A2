@@ -1413,8 +1413,8 @@ int Assignment2(GLFWwindow* window)
 
 
             // Lower arm (the lower arm appearing in window - not in reality) 
-            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 1.0f));
+            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.3f, 0.0f));
+            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 3.0f));
             glm::mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
 
             firstPass.setMat4("model", lowerArmWorld);
@@ -1445,7 +1445,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // Handle 
-            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 13.0, 0.0f));
+            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 12.0, 0.0f));
             glm::mat4 handleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 9.5f, 0.3f));
             glm::mat4 handleXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[2]), glm::vec3(1.0, 0.0, 0.0));
             glm::mat4 handleYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[2]), glm::vec3(0.0, 1.0, 0.0));
@@ -1458,7 +1458,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // Racket net
-            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.8f, 0.0f))
+            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.95f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(9.5f, 1.0f, 0.1f));
             glm::mat4 netMatrix = handleMatrix * NetPartMatrix;
             firstPass.setMat4("model", netMatrix);
@@ -1466,7 +1466,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // right tube
-            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.8f, 0.0f))
+            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.95f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
             glm::mat4 rightMatrix = handleMatrix * rightPartMatrix;
             firstPass.setMat4("model", rightMatrix);
@@ -1475,7 +1475,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // left tube
-            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.8f, 0.0f))
+            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.95f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
             glm::mat4 leftMatrix = handleMatrix * leftPartMatrix;
             firstPass.setMat4("model", leftMatrix);
@@ -2391,10 +2391,10 @@ int Assignment2(GLFWwindow* window)
                 glBindTexture(GL_TEXTURE_2D, white);
             }
 
-
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.84f, 0.7f));
             // Lower arm (the lower arm appearing in window - not in reality) 
-            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 1.0f));
+            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.3f, 0.0f));
+            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 3.0f));
             glm::mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
 
             shadow.setMat4("model", lowerArmWorld);
@@ -2428,7 +2428,7 @@ int Assignment2(GLFWwindow* window)
             }
 
             // Handle 
-            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 13.0, 0.0f));
+            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 12.0, 0.0f));
             glm::mat4 handleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 9.5f, 0.3f));
             glm::mat4 handleXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[2]), glm::vec3(1.0, 0.0, 0.0));
             glm::mat4 handleYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[2]), glm::vec3(0.0, 1.0, 0.0));
@@ -2442,7 +2442,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // Racket net
-            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.8f, 0.0f))
+            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.95f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(9.5f, 1.0f, 0.1f));
             glm::mat4 netMatrix = handleMatrix * NetPartMatrix;
             shadow.setMat4("model", netMatrix);
@@ -2451,7 +2451,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // right tube
-            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.8f, 0.0f))
+            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.95f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
             glm::mat4 rightMatrix = handleMatrix * rightPartMatrix;
             shadow.setMat4("model", rightMatrix);
@@ -2460,7 +2460,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // left tube
-            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.8f, 0.0f))
+            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.95f, 0.0f))
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
             glm::mat4 leftMatrix = handleMatrix * leftPartMatrix;
             shadow.setMat4("model", leftMatrix);
