@@ -1484,11 +1484,7 @@ int Assignment2(GLFWwindow* window)
 
         }
 
-        glm::mat4 kBaseModelMat = glm::mat4(1.0f);
-        kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(rotationx), glm::vec3(1.0f, 0.0f, 0.0f)); // rotate on true X
-        kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(rotationy), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate on current Y -> I'll look into this more later, but I wasn't able to find a way to make the third rotation be on the true axis, so I decided Y should rotate on current
-        kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(rotationz), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate on true Z
-
+        glm::mat4 kBaseModelMat = safeBaseModelMat;
         // Kelly
         if (true) {
 
