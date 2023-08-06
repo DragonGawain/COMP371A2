@@ -1605,26 +1605,14 @@ int Assignment2(GLFWwindow* window)
 
         // Jordan
         if (true) {
-            glm::mat4 armPosition = glm::translate(glm::mat4(1.0f), glm::vec3(racketposx[4], racketposy[4], racketposz[4]));
+            glm::mat4 armPosition = glm::translate(safeBaseModelMat, glm::vec3(racketposx[4], racketposy[4], racketposz[4]));
             glm::mat4 centerUnitCube = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
                 * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
-            armPosition = glm::translate(armPosition, glm::vec3(0.0f, 4.0f, 3.0f));
-            armPosition = glm::scale(armPosition, glm::vec3(0.625f, 0.625f, 0.625f));
-            firstPass.setMat4("model", armPosition);
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-
-            armPosition = glm::scale(armPosition, glm::vec3(scaleFactor[4], scaleFactor[4], scaleFactor[4]));
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            armPosition = glm::scale(armPosition, glm::vec3(pow(scaleFactor[4], -1), pow(scaleFactor[4], -1), pow(scaleFactor[4], -1)));
-            armPosition = glm::scale(armPosition, glm::vec3(1.6f, 1.6f, 1.6f));
-            armPosition = glm::translate(armPosition, glm::vec3(0.0f, -3.0f, -3.0f));
-            glBindVertexArray(VAOs[5]);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
 
             // Lower arm world matrix
             glm::mat4 lowerArmScale = glm::scale(glm::mat4(1.0f), scaleFactor[4] * glm::vec3(5.0f, 0.5f, 0.5f));
@@ -1636,6 +1624,8 @@ int Assignment2(GLFWwindow* window)
             glm::mat4 lowerArmRotate = xRotation * yRotation * zRotation;
             glm::mat4 lowerArmMatrix = armPosition * lowerArmRotate * lowerArmScale;
             firstPass.setMat4("model", lowerArmMatrix * centerUnitCube);
+
+            // Lower arm color
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             // Upper arm world matrix
@@ -1651,7 +1641,7 @@ int Assignment2(GLFWwindow* window)
             glm::mat4 upperArmTranslateMatrix = glm::translate(glm::mat4(1.0f), upperArmTranslateVector);
 
             glm::mat4 upperArmMatrix = upperArmTranslateMatrix * baseModelMat * lowerArmRotate * upperArmRotate
-                                     * lowerArmScale * upperArmOffset;
+                * lowerArmScale * upperArmOffset;
 
             firstPass.setMat4("model", upperArmMatrix * centerUnitCube);
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -1672,13 +1662,17 @@ int Assignment2(GLFWwindow* window)
             glm::mat4 racketMatrix = racketTranslateMatrix * baseModelMat * racketRotate * upperArmRotate * lowerArmRotate
                 * lowerArmScale * racketScale * racketOffset;
             firstPass.setMat4("model", racketMatrix * centerUnitCube);
+
+            // Racket handle color
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             // Racket paddle world matrix
-            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 10.0f, 0.25f)); // Relative to handle
+            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.75f, 15.0f, 0.25f)); // Relative to handle
             glm::mat4 paddleTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
             glm::mat4 paddleMatrix = racketMatrix * paddleTranslate * paddleScale;
             firstPass.setMat4("model", paddleMatrix * centerUnitCube);
+
+            // Racket paddle color
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             // Sphere
@@ -1696,8 +1690,7 @@ int Assignment2(GLFWwindow* window)
             glm::mat4 ballScale = glm::inverse(lowerArmScale * racketScale * paddleScale);
             glm::mat4 ballTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
             glm::mat4 ballWorldMatrix = paddleMatrix * ballScale * ballTranslate;
-
-            firstPass.setVec3("trueColor", glm::vec3(1.0f));
+;
             firstPass.setMat4("model", ballWorldMatrix);
             glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
         }
@@ -2201,7 +2194,7 @@ int Assignment2(GLFWwindow* window)
             // TODO: apply texture on tennis ball
             glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
             tennisRacket = glm::scale(tennisRacket, glm::vec3(pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f));
-            tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, -3.0f, -3.0f));
+            tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, -4.0f, -3.0f));
             glBindVertexArray(VAOs[5]);
             if (textureToggle)
             {
