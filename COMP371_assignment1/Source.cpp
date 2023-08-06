@@ -38,8 +38,11 @@ glm::vec3 up;
 const float cameraMoveSpeed = 0.5f;
 const float cameraAngleSpeed = 0.95f;
 
+
 // name order within the position/rotation arrays
 // Craig, Sergio ???, ???, ???
+//kellys position in array
+int kpos = 0; //TODO
 
 // world rotations
 float rotationx = 0.0f;
@@ -1208,6 +1211,92 @@ int Assignment2(GLFWwindow* window)
                 //renderCube();
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }
+
+        }
+
+        // Kelly
+        //--------------------------------------------------------------------------------------
+
+        if (true) {
+
+            glm::vec3 MIAMI_PINK = glm::vec3(1.0f, 0.40f, 1.0f);
+            glm::vec3 MIAMI_BLUE = glm::vec3(0.5f, 1.0f, 1.0f);
+            glm::vec3 WHITE_VEC3 = glm::vec3(1.0f, 1.0f, 1.0f);
+            
+            //this is just here to be out of the way
+            //doesnt need to be initialised more than once
+            //float gUNIT = float(1) / float(100);
+            //float init_size = gUNIT * 2;
+            //based on this unit cube
+            float init_size = 2.0f;
+            //float model_size = init_size*scaleFactor[kpos];
+            float arm_size = 2 * init_size;
+
+            firstPass.setMat4("model", baseModelMat);
+
+            // unit cube - model building block
+           //glBindVertexArray(VAOs[5]); 
+           //this is the VAO im using for model
+
+            glBindVertexArray(VAOs[5])
+
+            //draw model
+            //----------------------
+            //this is like a shoulder joint, and it moves the upper arm
+            kBaseModelMat = safeBaseModelMat;
+
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(racketposx[kPos], racketposy[kPos], racketposz[kPos]));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotx[kPos]), glm::vec3(1.0f, 0.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmroty[kPos]), glm::vec3(0.0f, 1.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotz[kPos]), glm::vec3(0.0f, 0.0f, 1.0f));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(scaleFactor[kPos], scaleFactor[kPos], scaleFactor[kPos]));
+            //glm::mat4 modelWorldMatrix= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
+            
+            firstPass.setMat4("model", modelWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            //draw upper arm
+            //use a transform matrix on the upper arm 
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3((init_size / 2) + (init_size / 2), 0, 0));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(2.0f, 1.0f, 1.0f));//twice as long
+            glm::mat4 uarmWorldMatrix = kBaseModelMat;
+            firstPass.setMat4("model", uarmWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            //draw elbow
+            //use a transform matrix on the shoulder
+            kBaseModelMat = glm::translate(kBaseModelMat), glm::vec3((init_size)+(arm_size), 0, 0));
+            kBaseModelMat = glm::rotate(kBaseModelMat), glm::radians(uarmrotz[kpos]), (0.0f, 0.0f, 1.0f));
+            glm::mat4 elbowWorldMatrix = kBaseModelMat;
+            firstPass.setMat4("model", elbowWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            //draw lower arm
+            //use a transform matrix on the elbow (to absorb its rotations)
+            kBaseModelMat = glm::translate(glm::mat4(1.0f), glm::vec3((init_size / 2) + (arm_size / 2), 0, 0));
+            kBaseModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 1.0f));
+            glm::mat4 larmScaleMatrix = kBaseModelMat;
+            firstPass.setMat4("model", larmScaleMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            //draw hand (wrist is for now the hand)
+            //use a transform matrix on the elbow
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3((init_size)+(arm_size), 0, 0));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketroty[kPos]), (0.0f, 1.0f, 0.0f));
+            glm::mat4 wristWorldMatrix = kBaseModelMat;
+
+            firstPass.setMat4("model", wristWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            //draw racket
+            //transform wrist i kind of want it sticking through the hand so not translated all the way out
+            kBaseModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(init_size / 4, init_size / 5, init_size / 4));
+            kBaseModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.5f, 0.50f, 0.50f));
+            kBaseModelMat = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[kPos]), (0.0f, 0.0f, 1.0f));
+            glm::mat4 racketWorldMatrix = kBaseModelMat;
+            firstPass.setMat4("model", racketWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
 
         }
 
