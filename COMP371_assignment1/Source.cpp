@@ -36,7 +36,7 @@ glm::vec3 right;
 glm::vec3 up;
 // constants
 const float cameraMoveSpeed = 0.5f;
-const float cameraAngleSpeed = 0.75f;
+const float cameraAngleSpeed = 0.95f;
 
 // name order within the position/rotation arrays
 // Craig, Sergio ???, ???, ???
@@ -81,8 +81,13 @@ bool canChangeController = true;
 bool canSelect = true;
 bool canTeleport = true;
 
+// shadow toggle
 bool shadowActive = true;
 bool canToggleShadow = true;
+
+// texture toggle
+bool textureToggle = true;
+bool canTextureToggle = true;
 
 // lighting
 glm::vec3 lightPos(0.0f, 30.0f, 0.0f);
@@ -265,57 +270,6 @@ int Assignment2(GLFWwindow* window)
     };
 
     // 5 - unit cube (base building block for model)
-    float unitCube[] =
-    {
-        // face 1 - bottom (XZ primary)
-        -1.0f, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f,  0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-        -1.0f, 0.0f, 1.0f,  0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f,  0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-        -1.0f, 0.0f, 1.0f,  0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-
-        // face 2 - left (ZY primary)
-        -1.0f, 0.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-        -1.0f, 2.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        -1.0f, 0.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        -1.0f, 2.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        -1.0f, 0.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f
-        - 1.0f, 2.0f, 1.0f,  -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-        // face 3 - back (XY primary)
-        -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-        1.0f,  0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, 2.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-        1.0f,  0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, 2.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-        1.0f,  2.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-
-        // face 4 - top (XZ secondary)
-        -1.0f, 2.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-        1.0f,  2.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-        -1.0f, 2.0f, 1.0f,  0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f,  2.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-        -1.0f, 2.0f, 1.0f,  0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f,  2.0f, 1.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-
-        // face 5 - right (ZY secondary)
-        1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-        1.0f, 2.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 2.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 2.0f, 1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-        // face 6 - front (XY secondary)
-        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        1.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        -1.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        1.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-        -1.0f, 2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-        1.0f,  2.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f
-    };
-
     float unitCube2[] =
     {
         // XY primary (back face)
@@ -367,7 +321,64 @@ int Assignment2(GLFWwindow* window)
         -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
     };
 
+    // 4 - unit cube (base building block for model)
+    float unitCubeRepeat[] =
+    {
+        // XY primary (back face)
+       -1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+        1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 3.0f, 3.0f, // top-right
+        1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 3.0f, 0.0f, // bottom-right
+        1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 3.0f, 3.0f, // top-right
+       -1.0f,  0.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
+       -1.0f,  2.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 3.0f, // top-left
 
+       // ZY primary (left face)
+       -1.0f,  2.0f,  1.0f, -1.0f,  0.0f,  0.0f, 3.0f, 3.0f, // top-right
+       -1.0f,  2.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 3.0f, // top-left
+       -1.0f,  0.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
+       -1.0f,  0.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
+       -1.0f,  0.0f,  1.0f, -1.0f,  0.0f,  0.0f, 3.0f, 0.0f, // bottom-right
+       -1.0f,  2.0f,  1.0f, -1.0f,  0.0f,  0.0f, 3.0f, 3.0f, // top-right
+
+       // XZ primary (bottom face)
+       -1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 3.0f, // top-right
+        1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 3.0f, 3.0f, // top-left
+        1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 3.0f, 0.0f, // bottom-left
+        1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 3.0f, 0.0f, // bottom-left
+       -1.0f,  0.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
+       -1.0f,  0.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 3.0f, // top-right
+
+       // XY secondary (front face)
+       -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+        1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 3.0f, 0.0f, // bottom-right
+        1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 3.0f, 3.0f, // top-right
+        1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 3.0f, 3.0f, // top-right
+       -1.0f,  2.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 3.0f, // top-left
+       -1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+
+       // ZY secondary (right face)
+        1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 3.0f, // top-left
+        1.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f, 3.0f, 0.0f, // bottom-right
+        1.0f,  2.0f, -1.0f,  1.0f,  0.0f,  0.0f, 3.0f, 3.0f, // top-right
+        1.0f,  0.0f, -1.0f,  1.0f,  0.0f,  0.0f, 3.0f, 0.0f, // bottom-right
+        1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 3.0f, // top-left
+        1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
+
+       // XZ secondary (top face)
+       -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 3.0f, // top-left
+        1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 0.0f, // bottom-right
+        1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 3.0f, // top-right  
+        1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 0.0f, // bottom-right
+       -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 3.0f, // top-left
+       -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
+    };
+
+    // 3 - vertical net bits
+    float netLines[] =
+    {
+        0.0f, 0.0f, 0.0f, 0.0f, 0.8f, 0.0f,
+        0.0f, 10.0f, 0.0f, 0.0f, 0.8f, 0.0f
+    };
 
     unsigned int VBOs[6], VAOs[6];
     glGenVertexArrays(6, VAOs);
@@ -391,6 +402,25 @@ int Assignment2(GLFWwindow* window)
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); //6
     glEnableVertexAttribArray(1); //7
 
+    // vertical net lines
+    glBindVertexArray(VAOs[3]); //1
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[3]); //2
+    glBufferData(GL_ARRAY_BUFFER, sizeof(netLines), netLines, GL_STATIC_DRAW); //3
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); //4
+    glEnableVertexAttribArray(0); //5
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); //6
+    glEnableVertexAttribArray(1); //7
+
+    // unit cube - model building block
+    glBindVertexArray(VAOs[4]); //1
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[4]); //2
+    glBufferData(GL_ARRAY_BUFFER, sizeof(unitCubeRepeat), unitCubeRepeat, GL_STATIC_DRAW); //3
+    glEnableVertexAttribArray(0); //5
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); //4
+    glEnableVertexAttribArray(1); //7
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); //6
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
 
     // unit cube - model building block
@@ -413,10 +443,10 @@ int Assignment2(GLFWwindow* window)
     glEnable(GL_DEPTH_TEST);
 
     // texture
-    unsigned int texture;
-    glGenTextures(1, &texture);
+    unsigned int clay;
+    glGenTextures(1, &clay);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, clay);
 
     // set the texture wrapping/filtering options (on the currently bound texture object)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -441,7 +471,82 @@ int Assignment2(GLFWwindow* window)
     }
     stbi_image_free(data);
 
+    unsigned int triColor;
 
+    glGenTextures(1, &triColor);
+    glBindTexture(GL_TEXTURE_2D, triColor);
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+    // flip all textures vertically so that they appear upright
+    stbi_set_flip_vertically_on_load(true);
+
+    // load and generate the textures
+    data = stbi_load("color.jpg", &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    unsigned int white;
+    glGenTextures(1, &white);
+    glBindTexture(GL_TEXTURE_2D, white);
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // load and generate the texture
+    data = stbi_load("white2.png", &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    unsigned int glossy;
+    glGenTextures(1, &glossy);
+    glBindTexture(GL_TEXTURE_2D, glossy);
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // load and generate the texture
+    data = stbi_load("glossy.jpg", &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 
 
     // shadow mapping
@@ -488,6 +593,8 @@ int Assignment2(GLFWwindow* window)
     // This is to avoid needing to initialize the variables every time the render loop runs
     glm::mat4 modelx = glm::mat4(1.0f);
     glm::mat4 modelz = glm::mat4(1.0f);
+    glm::mat4 netModelMat = glm::mat4(1.0f);
+    glm::mat4 terrainModelMat = glm::mat4(1.0f);
     glm::mat4 modelMatLowerArm = glm::mat4(1.0f);
     glm::mat4 modelMatUpperArm = glm::mat4(1.0f);
     glm::mat4 baseRacketModelMat = glm::mat4(1.0f);
@@ -550,7 +657,7 @@ int Assignment2(GLFWwindow* window)
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, white);
 
         // render first passes
         // the 'if (true)' statements are there just so that the code can be collapsed
@@ -615,6 +722,110 @@ int Assignment2(GLFWwindow* window)
                 glDrawArrays(GL_LINES, 0, 2);
             }
 
+
+            // NET
+            // net (using the X gridlines for the horizontal portion of the net)
+            glBindVertexArray(VAOs[0]);
+            for (int i = 0; i < 16; i++)
+            {
+                // same as x gridlines
+                modelx = glm::translate(baseModelMat, glm::vec3(0.0f, 2.0f + i / 2, 0));
+                firstPass.setMat4("model", modelx);
+
+                glDrawArrays(GL_LINES, 0, 2);
+            }
+
+            // vertical net bits
+            glBindVertexArray(VAOs[3]);
+            for (int i = 0; i < 37; i++)
+            {
+                // same as x gridlines
+                netModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f + i, 0, 0));
+                firstPass.setMat4("model", netModelMat);
+
+                glDrawArrays(GL_LINES, 0, 2);
+            }
+
+            // texture for net posts
+            // top part of the net
+            glBindVertexArray(VAOs[4]);
+            modelx = glm::scale(modelx, glm::vec3(18.0f, 0.5f, 0.2f));
+            firstPass.setMat4("model", modelx);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // right post of net
+            netModelMat = glm::scale(netModelMat, glm::vec3(0.4f, 6.0f, 0.4f));
+            firstPass.setMat4("model", netModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // middle post of net
+            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
+            firstPass.setMat4("model", netModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // left post of net
+            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
+            shadow.setMat4("model", netModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+            glBindVertexArray(VAOs[5]);
+            // TERRAIN
+            // base of terrain
+
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -1.0f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.2f, 39.0f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // terrain lines
+            // vertical lines
+            // far left line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // not-as-far-left line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-12.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // middle line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 21.0f));
+            firstPass.setMat4("model", terrainModelMat);;
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // not-as-far-right line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(12.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // far right line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(18.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // horizontal lines
+            // top line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 39.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // upper middle line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 21.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // lower midde line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -21.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // bottom line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -39.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
+            firstPass.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
 
             // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
             // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
@@ -1021,10 +1232,10 @@ int Assignment2(GLFWwindow* window)
         shadow.setBool("shadowActive", shadowActive);
 
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthMap);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, white);
 
         // render second passes
 
@@ -1039,7 +1250,7 @@ int Assignment2(GLFWwindow* window)
 
 
             // set the light source to 30 units 'up', whatever that up may be relative to the world orientation
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.1f, 25.0f, 10.0f));
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.1f, 25.0f, 5.0f));
             lightPos.x = baseModelMat[3][0];
             lightPos.y = baseModelMat[3][1];
             lightPos.z = baseModelMat[3][2];
@@ -1055,7 +1266,7 @@ int Assignment2(GLFWwindow* window)
             shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
             //glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(-0.1f, -25.0f, -10.0f));
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(-0.1f, -25.0f, -5.0f));
 
 
 
@@ -1110,6 +1321,123 @@ int Assignment2(GLFWwindow* window)
                 glDrawArrays(GL_LINES, 0, 2);
             }
 
+            // NET
+            // net (using the X gridlines for the horizontal portion of the net)
+            glBindVertexArray(VAOs[0]);
+            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.15f, 0.0f)); // set color for net
+            for (int i = 0; i < 16; i++)
+            {
+                // same as x gridlines
+                modelx = glm::translate(baseModelMat, glm::vec3(0.0f, 2.0f + i / 2, 0));
+                shadow.setMat4("model", modelx);
+
+                glDrawArrays(GL_LINES, 0, 2);
+            }
+
+            // vertical net bits
+            glBindVertexArray(VAOs[3]);
+            for (int i = 0; i < 37; i++)
+            {
+                // same as x gridlines
+                netModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f + i, 0, 0));
+                shadow.setMat4("model", netModelMat);
+
+                glDrawArrays(GL_LINES, 0, 2);
+            }
+
+            // texture for net posts
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, triColor);
+            }
+            // top part of the net
+            glBindVertexArray(VAOs[4]);
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for net railing
+            modelx = glm::scale(modelx, glm::vec3(18.0f, 0.5f, 0.2f));
+            shadow.setMat4("model", modelx);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // right post of net
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for net posts
+            netModelMat = glm::scale(netModelMat, glm::vec3(0.4f, 6.0f, 0.4f));
+            shadow.setMat4("model", netModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // middle post of net
+            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
+            shadow.setMat4("model", netModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // left post of net
+            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
+            shadow.setMat4("model", netModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, clay);
+            }
+
+            glBindVertexArray(VAOs[5]);
+            // TERRAIN
+            // base of terrain
+            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.52f, 0.4f)); // set color for terrain base
+
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -1.0f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.2f, 39.0f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // terrain lines
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for terrain lines
+            // vertical lines
+            // far left line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // not-as-far-left line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-12.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // middle line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 21.0f));
+            shadow.setMat4("model", terrainModelMat);;
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // not-as-far-right line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(12.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // far right line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(18.0f, -0.5f, 0.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // horizontal lines
+            // top line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 39.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // upper middle line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 21.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // lower midde line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -21.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // bottom line
+            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -39.0f));
+            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
+            shadow.setMat4("model", terrainModelMat);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindTexture(GL_TEXTURE_2D, white);
+
 
 
             //shader.use();
@@ -1162,6 +1490,10 @@ int Assignment2(GLFWwindow* window)
             // This allows me to easily anchor the base of the next component to the end of the last component. 
             // It is a 'simple' translation because I only need to translate in the Y direction and the component will translate in the rotated Y, allowing it to align perfectly
 
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
             // RACKET LEFT
             // racket component 1 - bottom left
             baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -1257,6 +1589,7 @@ int Assignment2(GLFWwindow* window)
         }
 
         baseModelMat = safeBaseModelMat;
+        glBindTexture(GL_TEXTURE_2D, white);
 
         // Sergio
         if (true) {
@@ -1267,7 +1600,7 @@ int Assignment2(GLFWwindow* window)
             auto skinColor = glm::vec3(0.945f, 0.760f, 0.490f);
 
             glm::mat4 baseModel =
-                safeBaseModelMat *
+                baseModelMat *
                 glm::translate(glm::mat4(1.0f), glm::vec3(racketposx[1], racketposy[1], racketposz[1])) *
                 glm::scale(glm::mat4(1.0), glm::vec3(scaleFactor[1], scaleFactor[1], scaleFactor[1]));
 
@@ -1326,6 +1659,10 @@ int Assignment2(GLFWwindow* window)
 
 
             // Tennis Racket Parts
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
 
             glm::mat4 racketHandle = tennisRacket
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 1.75f / 2, 0.2f));
@@ -2048,6 +2385,20 @@ void processInput(GLFWwindow* window)
     else
     {
         canChangeController = true;
+    }
+
+    // toggle textures
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+    {
+        if (canTextureToggle)
+        {
+            textureToggle = !textureToggle;
+            canTextureToggle = false;
+        }
+    }
+    else
+    {
+        canTextureToggle = true;
     }
 
 }
