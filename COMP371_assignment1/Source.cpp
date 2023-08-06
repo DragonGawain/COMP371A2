@@ -1212,6 +1212,71 @@ int Assignment2(GLFWwindow* window)
         }
 
 
+        // Jordan
+        if (true) {
+            int jPosition = 2;
+
+            glm::mat4 armPosition = glm::translate(glm::mat4(1.0f), glm::vec3(racketposx[jPosition], racketposy[jPosition], racketposz[jPosition]));
+            glm::mat4 centerUnitCube = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
+                * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+
+            // Lower arm world matrix
+            glm::mat4 lowerArmScale = glm::scale(glm::mat4(1.0f), scaleFactor[jPosition] * glm::vec3(5.0f, 0.5f, 0.5f));
+
+            glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[jPosition]), glm::vec3(1.0f, 0.0f, 0.0f));
+            glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[jPosition]), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[jPosition]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            glm::mat4 lowerArmRotate = xRotation * yRotation * zRotation;
+            glm::mat4 lowerArmMatrix = armPosition * lowerArmRotate * lowerArmScale;
+            firstPass.setMat4("model", lowerArmMatrix * centerUnitCube);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Upper arm world matrix
+            glm::mat4 upperArmOffset = glm::translate(glm::mat4(1.0f), glm::vec3(0.475f, 0.0f, 0.0f)); // Racket needs to be translated before rotation
+
+            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[jPosition]), glm::vec3(1.0f, 0.0f, 0.0f));
+            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[jPosition]), glm::vec3(0.0f, 1.0f, 0.0f));
+            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[jPosition]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            glm::mat4 upperArmRotate = xRotation * yRotation * zRotation;
+
+            glm::vec3 upperArmTranslateVector = lowerArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f); // Calculate translation of joint
+            glm::mat4 upperArmTranslateMatrix = glm::translate(glm::mat4(1.0f), upperArmTranslateVector);
+
+            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * lowerArmRotate * upperArmRotate
+                * lowerArmScale * upperArmOffset;
+
+            firstPass.setMat4("model", upperArmMatrix * centerUnitCube);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Racket handle world matrix
+            glm::mat4 racketScale(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 0.5f))); // Relative to upper arm
+            glm::mat4 racketOffset(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f))); // Racket needs to be translated before rotation
+
+            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[jPosition]), glm::vec3(1.0f, 0.0f, 0.0f));
+            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[jPosition]), glm::vec3(0.0f, 1.0f, 0.0f));
+            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[jPosition]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            glm::mat4 racketRotate = xRotation * yRotation * zRotation;
+
+            glm::vec3 racketTranslateVector(upperArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f)); // Calculate translation of hand position
+            glm::mat4 racketTranslateMatrix(glm::translate(glm::mat4(1.0f), racketTranslateVector));
+
+            glm::mat4 racketMatrix = racketTranslateMatrix * racketRotate * upperArmRotate * lowerArmRotate
+                * lowerArmScale * racketScale * racketOffset;
+            firstPass.setMat4("model", racketMatrix * centerUnitCube);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Racket paddle world matrix
+            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 10.0f, 0.25f)); // Relative to handle
+            glm::mat4 paddleTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
+            glm::mat4 paddleMatrix = racketMatrix * paddleTranslate * paddleScale;
+            firstPass.setMat4("model", paddleMatrix * centerUnitCube);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // reset viewport
