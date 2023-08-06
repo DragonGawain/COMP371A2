@@ -61,12 +61,12 @@ const float racketMoveSpeed = 0.5f;
 // lower arm rotations
 float larmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 float larmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-float larmrotz[5] = { 315.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float larmrotz[5] = { 315.0f, 0.0f, 45.0f, 0.0f, 0.0f };
 
 // upper arm rotations
 float uarmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 float uarmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-float uarmrotz[5] = { 45.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+float uarmrotz[5] = { 45.0f, 0.0f, 45.0f, 0.0f, 0.0f };
 
 // racket rotations
 float racketrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
@@ -135,7 +135,7 @@ void defineSphereVertexArray() {
 }
 
 // Computes the normal vector of a face with three given vectors, and adds said normal vector to the vertex normal
-void computeNormals(unsigned int p1, unsigned int p2, unsigned int p3) {
+void computeSphereNormals(unsigned int p1, unsigned int p2, unsigned int p3) {
     glm::vec3 p1Pos = sphereVertexArray[3 * p1], p2Pos = sphereVertexArray[3 * p2], p3Pos = sphereVertexArray[3 * p3]; // Positions of relevant vertices
     glm::vec3 faceNormal = glm::normalize(glm::cross(p2Pos - p1Pos, p3Pos - p1Pos)); // Normal vector of the resulting plane
 
@@ -157,7 +157,7 @@ void defineSphereIndexArray() {
         sphereIndexArray[positionInIndexArray++] = 0; // Lowest point
         sphereIndexArray[positionInIndexArray++] = p1;
         sphereIndexArray[positionInIndexArray++] = p2;
-        computeNormals(0, p1, p2);
+        computeSphereNormals(0, p1, p2);
     }
 
     // Middle of sphere
@@ -177,13 +177,13 @@ void defineSphereIndexArray() {
             sphereIndexArray[positionInIndexArray++] = p3;
             sphereIndexArray[positionInIndexArray++] = p2;
             sphereIndexArray[positionInIndexArray++] = p1;
-            computeNormals(p3, p2, p1);
+            computeSphereNormals(p3, p2, p1);
 
             // Second triangle
             sphereIndexArray[positionInIndexArray++] = p2;
             sphereIndexArray[positionInIndexArray++] = p3;
             sphereIndexArray[positionInIndexArray++] = p4;
-            computeNormals(p2, p3, p4);
+            computeSphereNormals(p2, p3, p4);
         }
     }
 
@@ -199,7 +199,7 @@ void defineSphereIndexArray() {
         sphereIndexArray[positionInIndexArray++] = sphereStacks * sphereSectors + 1; // Highest point
         sphereIndexArray[positionInIndexArray++] = p2;
         sphereIndexArray[positionInIndexArray++] = p1;
-        computeNormals(sphereStacks * sphereSectors + 1, p2, p1);
+        computeSphereNormals(sphereStacks * sphereSectors + 1, p2, p1);
     }
 }
 
@@ -1851,8 +1851,84 @@ int Assignment2(GLFWwindow* window)
         }
 
 
+        // Jordan
+        if (true) {
+            int jPosition = 2;
+            
+            glm::mat4 armPosition = glm::translate(glm::mat4(1.0f), glm::vec3(racketposx[jPosition], racketposy[jPosition], racketposz[jPosition]));
+            glm::mat4 centerUnitCube = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
+                                     * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+
+            // Lower arm world matrix
+            glm::mat4 lowerArmScale = glm::scale(glm::mat4(1.0f), scaleFactor[jPosition] * glm::vec3(5.0f, 0.5f, 0.5f));
+
+            glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[jPosition]), glm::vec3(1.0f, 0.0f, 0.0f));
+            glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[jPosition]), glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[jPosition]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            glm::mat4 lowerArmRotate = xRotation * yRotation * zRotation;
+            glm::mat4 lowerArmMatrix = armPosition * lowerArmRotate * lowerArmScale;
+            shadow.setMat4("model", lowerArmMatrix * centerUnitCube);
+
+            // Lower arm color
+            glm::vec3 armColor = glm::vec3(0.443f, 0.255f, 0.216f);
+            shadow.setVec3("trueColor", armColor);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Upper arm world matrix
+            glm::mat4 upperArmOffset = glm::translate(glm::mat4(1.0f), glm::vec3(0.475f, 0.0f, 0.0f)); // Racket needs to be translated before rotation
+
+            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[jPosition]), glm::vec3(1.0f, 0.0f, 0.0f));
+            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[jPosition]), glm::vec3(0.0f, 1.0f, 0.0f));
+            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[jPosition]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            glm::mat4 upperArmRotate = xRotation * yRotation * zRotation;
+
+            glm::vec3 upperArmTranslateVector = lowerArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f); // Calculate translation of joint
+            glm::mat4 upperArmTranslateMatrix = glm::translate(glm::mat4(1.0f), upperArmTranslateVector);
+
+            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * lowerArmRotate * upperArmRotate
+                                     * lowerArmScale * upperArmOffset;
+
+            shadow.setMat4("model", upperArmMatrix * centerUnitCube);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Racket handle world matrix
+            glm::mat4 racketScale(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 0.5f))); // Relative to upper arm
+            glm::mat4 racketOffset(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f))); // Racket needs to be translated before rotation
+            
+            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[jPosition]), glm::vec3(1.0f, 0.0f, 0.0f));
+            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[jPosition]), glm::vec3(0.0f, 1.0f, 0.0f));
+            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[jPosition]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            glm::mat4 racketRotate = xRotation * yRotation * zRotation;
+
+            glm::vec3 racketTranslateVector(upperArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f)); // Calculate translation of hand position
+            glm::mat4 racketTranslateMatrix(glm::translate(glm::mat4(1.0f), racketTranslateVector));
+
+            glm::mat4 racketMatrix = racketTranslateMatrix * racketRotate * upperArmRotate * lowerArmRotate
+                                   * lowerArmScale * racketScale * racketOffset;
+            shadow.setMat4("model", racketMatrix * centerUnitCube);
+
+            // Racket handle color
+            glm::vec3 handleColor = glm::vec3(0.878f, 0.69f, 1.0f);
+            shadow.setVec3("trueColor", handleColor);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Racket paddle world matrix
+            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 10.0f, 0.25f)); // Relative to handle
+            glm::mat4 paddleTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
+            glm::mat4 paddleMatrix = racketMatrix * paddleTranslate * paddleScale;
+            shadow.setMat4("model", paddleMatrix * centerUnitCube);
+
+            // Racket paddle color
+            glm::vec3 paddleColor = glm::vec3(0.722f, 0.286f, 1.0f);
+            shadow.setVec3("trueColor", paddleColor);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+
         // Sphere
-        
         if (true) {
             // Sphere VAO, VBO and EBO
             glBindVertexArray(sphere.VAO);
