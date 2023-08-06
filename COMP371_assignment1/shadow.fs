@@ -16,6 +16,8 @@ uniform sampler2D shadowMap;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
+uniform bool shadowActive;
+
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
     // perform perspective divide
@@ -72,8 +74,12 @@ void main()
     spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
     vec3 specular = spec * lightColor;    
     // calculate shadow
-    float shadow = ShadowCalculation(FragPosLightSpace);                      
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
+    float shadow = ShadowCalculation(FragPosLightSpace);
+    vec3 lighting;
+    if (shadowActive)
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
+    else
+        lighting = (ambient + 1.0 * (diffuse + specular)) * color;  
     
     FragColor = vec4(lighting, 1.0);
 }

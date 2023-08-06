@@ -76,9 +76,13 @@ float racketrotz[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 // switch var to determine which part of the model should be rotated
 int subject = 0;
 int controller = 0;
+bool canChangeController = true;
 
 bool canSelect = true;
 bool canTeleport = true;
+
+bool shadowActive = true;
+bool canToggleShadow = true;
 
 // lighting
 glm::vec3 lightPos(0.0f, 30.0f, 0.0f);
@@ -460,12 +464,12 @@ int Assignment2(GLFWwindow* window)
             // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
 
             // scaling matrix - top of hierarchy
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[controller], racketposy[controller], racketposz[controller])); // translates entire model - rooted at origin
-            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[controller], scaleFactor[controller], scaleFactor[controller])); // scales entire model
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[0], racketposy[0], racketposz[0])); // translates entire model - rooted at origin
+            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[0], scaleFactor[0], scaleFactor[0])); // scales entire model
             // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
 
             //modelMatLowerArm = baseModelMat;
             modelMatLowerArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -478,9 +482,9 @@ int Assignment2(GLFWwindow* window)
             // translate the upper arm so that it sits just above the lower arm
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
             // rotations for the upper arm protion of the model - the racket reflects the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
 
             //modelMatUpperArm = baseModelMat;
             modelMatUpperArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -491,9 +495,9 @@ int Assignment2(GLFWwindow* window)
 
             // apply hierarchical rotations for the racket
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 9.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f));
 
             //shader.setVec3("trueColor", glm::vec3(0.5f, 0.5f, 0.5f)); // SETTING ALL OF RACKET TO BE GREY FOR NOW
 
@@ -617,6 +621,7 @@ int Assignment2(GLFWwindow* window)
 
         shadow.setMat4("projection", projectionMat);
         shadow.setMat4("view", viewMat);
+        shadow.setBool("shadowActive", shadowActive);
 
 
         glActiveTexture(GL_TEXTURE0);
@@ -649,7 +654,7 @@ int Assignment2(GLFWwindow* window)
             //visual representation of the light source location
             shadow.setMat4("model", baseModelMat);
             shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            //glDrawArrays(GL_TRIANGLES, 0, 36);
 
             baseModelMat = glm::translate(baseModelMat, glm::vec3(-0.1f, -25.0f, -10.0f));
 
@@ -706,6 +711,8 @@ int Assignment2(GLFWwindow* window)
                 glDrawArrays(GL_LINES, 0, 2);
             }
 
+
+
             //shader.use();
 
             // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
@@ -713,12 +720,12 @@ int Assignment2(GLFWwindow* window)
             // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
 
             // scaling matrix - top of hierarchy
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[controller], racketposy[controller], racketposz[controller])); // translates entire model - rooted at origin
-            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[controller], scaleFactor[controller], scaleFactor[controller])); // scales entire model
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[0], racketposy[0], racketposz[0])); // translates entire model - rooted at origin
+            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[0], scaleFactor[0], scaleFactor[0])); // scales entire model
             // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
 
             //modelMatLowerArm = baseModelMat;
             modelMatLowerArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -731,9 +738,9 @@ int Assignment2(GLFWwindow* window)
             // translate the upper arm so that it sits just above the lower arm
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
             // rotations for the upper arm protion of the model - the racket reflects the same rotations
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
 
             //modelMatUpperArm = baseModelMat;
             modelMatUpperArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
@@ -744,9 +751,9 @@ int Assignment2(GLFWwindow* window)
 
             // apply hierarchical rotations for the racket
             baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 9.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[controller]), glm::vec3(1.0f, 0.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[controller]), glm::vec3(0.0f, 1.0f, 0.0f));
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[controller]), glm::vec3(0.0f, 0.0f, 1.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
+            baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f));
 
             shadow.setVec3("trueColor", glm::vec3(0.5f, 0.5f, 0.5f)); // SETTING ALL OF RACKET TO BE GREY FOR NOW
 
@@ -870,6 +877,7 @@ int Assignment2(GLFWwindow* window)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    std::cout << "CALL" << std::endl;
     glViewport(0, 0, width, height);
 }
 
@@ -1295,6 +1303,58 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+    }
+
+    // toggle shadow
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+    {
+        if (canToggleShadow)
+        {
+            shadowActive = !shadowActive;
+            canToggleShadow = false;
+        }
+    }
+    else
+    {
+        canToggleShadow = true;
+    }
+
+    // cycle through controller
+    if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+    {
+        if (canChangeController)
+        {
+            controller++;
+            if (controller == 5)
+            {
+                controller = 0;
+            }
+            canChangeController = false;
+
+            switch (controller)
+            {
+            case 0:
+                std::cout << "Craig's model selected!" << std::endl;
+                break;
+            case 1:
+                std::cout << "1's model selected!" << std::endl;
+                break;
+            case 2:
+                std::cout << "2's model selected!" << std::endl;
+                break;
+            case 3:
+                std::cout << "3's model selected!" << std::endl;
+                break;
+            case 4:
+                std::cout << "4's model selected!" << std::endl;
+                break;
+            }
+
+        }
+    }
+    else
+    {
+        canChangeController = true;
     }
 
 }
