@@ -1662,6 +1662,26 @@ int Assignment2(GLFWwindow* window)
             glm::mat4 paddleMatrix = racketMatrix * paddleTranslate * paddleScale;
             firstPass.setMat4("model", paddleMatrix * centerUnitCube);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+
+            // Texture
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
+
+            glm::mat4 ballScale = glm::inverse(lowerArmScale * racketScale * paddleScale);
+            glm::mat4 ballTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
+            glm::mat4 ballWorldMatrix = paddleMatrix * ballScale * ballTranslate;
+
+            firstPass.setVec3("trueColor", glm::vec3(1.0f));
+            firstPass.setMat4("model", ballWorldMatrix);
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -2529,26 +2549,6 @@ int Assignment2(GLFWwindow* window)
             glm::mat4 centerUnitCube = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
                 * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
-            armPosition = glm::translate(armPosition, glm::vec3(0.0f, 4.0f, 3.0f));
-            armPosition = glm::scale(armPosition, glm::vec3(scaleFactor[4], scaleFactor[4], scaleFactor[4]));
-            shadow.setMat4("model", armPosition);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            armPosition = glm::scale(armPosition, glm::vec3(pow(scaleFactor[4], -1), pow(scaleFactor[4], -1), pow(scaleFactor[4], -1)));
-            armPosition = glm::translate(armPosition, glm::vec3(0.0f, -3.0f, -3.0f));
-            glBindVertexArray(VAOs[5]);
             if (textureToggle)
             {
                 glBindTexture(GL_TEXTURE_2D, glossy);
@@ -2611,7 +2611,7 @@ int Assignment2(GLFWwindow* window)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             // Racket paddle world matrix
-            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 10.0f, 0.25f)); // Relative to handle
+            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.75f, 15.0f, 0.25f)); // Relative to handle
             glm::mat4 paddleTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
             glm::mat4 paddleMatrix = racketMatrix * paddleTranslate * paddleScale;
             shadow.setMat4("model", paddleMatrix * centerUnitCube);
@@ -2620,6 +2620,26 @@ int Assignment2(GLFWwindow* window)
             glm::vec3 paddleColor = glm::vec3(0.722f, 0.286f, 1.0f);
             shadow.setVec3("trueColor", paddleColor);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+
+            // Texture
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, tennisBall);
+            }
+
+            glm::mat4 ballScale = glm::inverse(lowerArmScale * racketScale * paddleScale);
+            glm::mat4 ballTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
+            glm::mat4 ballWorldMatrix = paddleMatrix * ballScale * ballTranslate;
+
+            shadow.setVec3("trueColor", glm::vec3(1.0f));
+            shadow.setMat4("model", ballWorldMatrix);
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
         }
 
         // check and call events (poll IO) and swap the buffers
