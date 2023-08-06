@@ -50,7 +50,7 @@ const float rotationFactor = 2.5f;
 
 // complete model scaling
 float scaleFactor[5] = { 0.5f, 2.0f, 1.0f, 1.0f, 1.0f };
-const float scaleFactorModifier = 0.001f;
+const float scaleFactorModifier = 0.005f;
 
 // complete model movement
 float racketposx[5] = { 0.0f, -10.0f, -10.0f, 10.0f, 10.0f };
@@ -61,12 +61,12 @@ const float racketMoveSpeed = 0.5f;
 // lower arm rotations
 float larmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 float larmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-float larmrotz[5] = { 315.0f, 0.0f, 0.0f, 0.0f, 45.0f };
+float larmrotz[5] = { 315.0f, 0.0f, 0.0f, 340.0f, 45.0f };
 
 // upper arm rotations
 float uarmrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 float uarmroty[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-float uarmrotz[5] = { 45.0f, 0.0f, 0.0f, 0.0f, 45.0f };
+float uarmrotz[5] = { 45.0f, 0.0f, 0.0f, 30.0f, 45.0f };
 
 // racket rotations
 float racketrotx[5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
@@ -739,11 +739,13 @@ int Assignment2(GLFWwindow* window)
 
     // Kelly
     glm::mat4 kBaseModelMat;
+    glm::mat4 shoulderWorldMat;
     glm::mat4 uarmWorldMatrix;
     glm::mat4 elbowWorldMatrix;
-    glm::mat4 larmScaleMatrix;
+    glm::mat4 larmWorldMatrix;
     glm::mat4 wristWorldMatrix;
     glm::mat4 racketWorldMatrix;
+    glm::mat4 batWorldMatrix;
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -1191,7 +1193,7 @@ int Assignment2(GLFWwindow* window)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, 4.0f, 3.0f));
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(0.625f, 0.625f, 0.625f));
+            tennisRacket = glm::scale(tennisRacket, glm::vec3(scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f));
             firstPass.setMat4("model", tennisRacket);
 
             // Sphere
@@ -1202,7 +1204,7 @@ int Assignment2(GLFWwindow* window)
             // Texture
             // TODO: apply texture on tennis ball
             glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(1.6f, 1.6f, 1.6f));
+            tennisRacket = glm::scale(tennisRacket, glm::vec3(pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f));
             tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, -3.0f, -3.0f));
             glBindVertexArray(VAOs[5]);
 
@@ -1390,6 +1392,7 @@ int Assignment2(GLFWwindow* window)
 
             glm::mat4 afafSphereMat = shoulderPartMatrix1 * rotationMatrix;
             afafSphereMat = glm::translate(afafSphereMat, glm::vec3(0.0f, 8.0f, 5.0f));
+            afafSphereMat = glm::scale(afafSphereMat, glm::vec3(scaleFactor[2], scaleFactor[2], scaleFactor[2]));
             firstPass.setMat4("model", afafSphereMat);
             if (textureToggle)
             {
@@ -1481,21 +1484,24 @@ int Assignment2(GLFWwindow* window)
 
         }
 
-        baseModelMat = safeBaseModelMat;
+        glm::mat4 kBaseModelMat = glm::mat4(1.0f);
+        kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(rotationx), glm::vec3(1.0f, 0.0f, 0.0f)); // rotate on true X
+        kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(rotationy), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate on current Y -> I'll look into this more later, but I wasn't able to find a way to make the third rotation be on the true axis, so I decided Y should rotate on current
+        kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(rotationz), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate on true Z
 
         // Kelly
         if (true) {
 
-            //this is just here to be out of the way
+             //this is just here to be out of the way
             //doesnt need to be initialised more than once
             //float gUNIT = float(1) / float(100);
             //float init_size = gUNIT * 2;
             //based on this unit cube
-            float init_size = 0.5f;
+            float init_size = 2.0f;
             //float model_size = init_size*scaleFactor[kpos];
             float arm_size = 2 * init_size;
 
-            firstPass.setMat4("model", baseModelMat);
+            firstPass.setMat4("model", kBaseModelMat);
 
             // unit cube - model building block
            //glBindVertexArray(VAOs[5]); 
@@ -1506,49 +1512,53 @@ int Assignment2(GLFWwindow* window)
             //draw model
             //----------------------
             //this is like a shoulder joint, and it moves the upper arm
-            glm::mat4 kBaseModelMat = safeBaseModelMat;
 
             kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(racketposx[3], racketposy[3], racketposz[3]));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
             kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
+            shoulderWorldMat = kBaseModelMat;
             //glm::mat4 modelWorldMatrix= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
 
-            firstPass.setMat4("model", modelWorldMatrix);
+            firstPass.setMat4("model", shoulderWorldMat);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             //draw upper arm
             //use a transform matrix on the upper arm 
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3((init_size / 2) + (init_size / 2), 0, 0));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(2.0f, 1.0f, 1.0f));//twice as long
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0 , init_size , 0));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f, 1.0f));//twice as long
             uarmWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", uarmWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             //draw elbow
             //use a transform matrix on the shoulder
-            kBaseModelMat = glm::translate((kBaseModelMat), glm::vec3((init_size)+(arm_size), 0, 0));
+            kBaseModelMat = glm::translate((kBaseModelMat), glm::vec3(0,(arm_size/2), 0));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 0.5f, 1.0f));//doing it this way means i have to unscale, cant just take shoulder
             elbowWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", elbowWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            //draw lower arm
+            ////draw lower arm
             //use a transform matrix on the elbow (to absorb its rotations)
-            kBaseModelMat = glm::translate(glm::mat4(1.0f), glm::vec3((init_size / 2) + (arm_size / 2), 0, 0));
-            kBaseModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 1.0f));
-            larmScaleMatrix = kBaseModelMat;
-            firstPass.setMat4("model", larmScaleMatrix);
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0, (init_size), 0));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f, 1.0f));
+            larmWorldMatrix = kBaseModelMat;
+            firstPass.setMat4("model", larmWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
             //draw hand (wrist is for now the hand)
             //use a transform matrix on the elbow
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3((init_size)+(arm_size), 0, 0));
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0,(arm_size/2),  0));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 0.5f, 1.0f));
             wristWorldMatrix = kBaseModelMat;
 
             firstPass.setMat4("model", wristWorldMatrix);
@@ -1556,11 +1566,19 @@ int Assignment2(GLFWwindow* window)
 
             //draw racket
             //transform wrist i kind of want it sticking through the hand so not translated all the way out
-            kBaseModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(init_size / 4, init_size / 5, init_size / 4));
-            kBaseModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.5f, 0.50f, 0.50f));
-            kBaseModelMat = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(init_size / 4, init_size / 5, init_size / 4));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(2.5f, 0.50f, 0.50f));
+            //kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
             racketWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", racketWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            //turn it from a sad sticck into a bat at least
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0.85* init_size,-0.25*init_size,0));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f,2.0f ));
+            //kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
+            batWorldMatrix = kBaseModelMat;
+            firstPass.setMat4("model", batWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
         }
@@ -1582,9 +1600,10 @@ int Assignment2(GLFWwindow* window)
             glBindVertexArray(sphere.VAO);
             glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
+
+            armPosition = glm::scale(armPosition, glm::vec3(scaleFactor[4], scaleFactor[4], scaleFactor[4]));
             glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+            armPosition = glm::scale(armPosition, glm::vec3(pow(scaleFactor[4], -1), pow(scaleFactor[4], -1), pow(scaleFactor[4], -1)));
             armPosition = glm::scale(armPosition, glm::vec3(1.6f, 1.6f, 1.6f));
             armPosition = glm::translate(armPosition, glm::vec3(0.0f, -3.0f, -3.0f));
             glBindVertexArray(VAOs[5]);
@@ -2127,7 +2146,7 @@ int Assignment2(GLFWwindow* window)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, 4.0f, 3.0f));
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(0.625f, 0.625f, 0.625f));
+            tennisRacket = glm::scale(tennisRacket, glm::vec3(scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f));
             shadow.setMat4("model", tennisRacket);
             shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
             if (textureToggle)
@@ -2143,7 +2162,7 @@ int Assignment2(GLFWwindow* window)
             // Texture
             // TODO: apply texture on tennis ball
             glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(1.6f, 1.6f, 1.6f));
+            tennisRacket = glm::scale(tennisRacket, glm::vec3(pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f));
             tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, -3.0f, -3.0f));
             glBindVertexArray(VAOs[5]);
             if (textureToggle)
@@ -2349,6 +2368,7 @@ int Assignment2(GLFWwindow* window)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             afafSphereMat = glm::translate(afafSphereMat, glm::vec3(0.0f, 8.0f, 5.0f));
+            afafSphereMat = glm::scale(afafSphereMat, glm::vec3(scaleFactor[2], scaleFactor[2], scaleFactor[2]));
             shadow.setMat4("model", afafSphereMat);
             shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
             if (textureToggle)
@@ -2454,29 +2474,35 @@ int Assignment2(GLFWwindow* window)
 
         //Kelly
         if (true) {
-            //colours
+              //colours
             glm::vec3 MIAMI_PINK = glm::vec3(1.0f, 0.40f, 1.0f);
             glm::vec3 MIAMI_BLUE = glm::vec3(0.5f, 1.0f, 1.0f);
             glm::vec3 WHITE_VEC3 = glm::vec3(1.0f, 1.0f, 1.0f);
+            glm::vec3 YELLOW = glm::vec3(1.0f, 1.0f, 0.0f);
 
             glm::vec3 PURP = glm::vec3(0.58, 0.50, 1.00);
             //-----------------------------------
 
             glBindVertexArray(VAOs[5]);
             //shader.use();
-            shadow.setMat4("model", kBaseModelMat);
-            shadow.setVec3("trueColor", PURP); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
+            shadow.setMat4("model", shoulderWorldMat);
+            shadow.setVec3("trueColor", WHITE_VEC3); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             shadow.setMat4("model", uarmWorldMatrix);
+            shadow.setVec3("trueColor", PURP); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             shadow.setMat4("model", elbowWorldMatrix);
+            shadow.setVec3("trueColor", WHITE_VEC3);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            shadow.setMat4("model", larmScaleMatrix);
+            shadow.setMat4("model", larmWorldMatrix);
+            shadow.setVec3("trueColor", PURP);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            shadow.setVec3("trueColor", PURP);
             shadow.setMat4("model", wristWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -2485,8 +2511,11 @@ int Assignment2(GLFWwindow* window)
                 glBindTexture(GL_TEXTURE_2D, glossy);
             }
 
-            shadow.setVec3("trueColor", MIAMI_BLUE);
+            shadow.setVec3("trueColor", MIAMI_PINK);
             shadow.setMat4("model", racketWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            shadow.setMat4("model", batWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
         }
@@ -2501,7 +2530,7 @@ int Assignment2(GLFWwindow* window)
                 * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
             armPosition = glm::translate(armPosition, glm::vec3(0.0f, 4.0f, 3.0f));
-            armPosition = glm::scale(armPosition, glm::vec3(0.625f, 0.625f, 0.625f));
+            armPosition = glm::scale(armPosition, glm::vec3(scaleFactor[4], scaleFactor[4], scaleFactor[4]));
             shadow.setMat4("model", armPosition);
             shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
             if (textureToggle)
@@ -2517,7 +2546,7 @@ int Assignment2(GLFWwindow* window)
             // Texture
             // TODO: apply texture on tennis ball
             glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            armPosition = glm::scale(armPosition, glm::vec3(1.6f, 1.6f, 1.6f));
+            armPosition = glm::scale(armPosition, glm::vec3(pow(scaleFactor[4], -1), pow(scaleFactor[4], -1), pow(scaleFactor[4], -1)));
             armPosition = glm::translate(armPosition, glm::vec3(0.0f, -3.0f, -3.0f));
             glBindVertexArray(VAOs[5]);
             if (textureToggle)
