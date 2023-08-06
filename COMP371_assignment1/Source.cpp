@@ -39,7 +39,7 @@ const float cameraMoveSpeed = 0.5f;
 const float cameraAngleSpeed = 0.95f;
 
 // name order within the position/rotation arrays
-// Craig, Sergio Afaf ???, ???
+// Craig, Sergio Afaf Kelly, Jordan
 
 // world rotations
 float rotationx = 0.0f;
@@ -1484,6 +1484,7 @@ int Assignment2(GLFWwindow* window)
 
         }
 
+        baseModelMat = safeBaseModelMat;
         glm::mat4 kBaseModelMat = safeBaseModelMat;
         // Kelly
         if (true) {
@@ -2546,9 +2547,9 @@ int Assignment2(GLFWwindow* window)
             shadow.setMat4("model", racketWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f + racketWorldMatrix[3][0], 4.0f + racketWorldMatrix[3][1], 3.0f + racketWorldMatrix[3][2]));
-            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
-            shadow.setMat4("model", baseModelMat);
+            shoulderWorldMat = glm::translate(shoulderWorldMat, glm::vec3(0.0f, 4.0f, 3.0f));
+            shoulderWorldMat = glm::scale(shoulderWorldMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
+            shadow.setMat4("model", shoulderWorldMat);
             shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
             if (textureToggle)
             {
