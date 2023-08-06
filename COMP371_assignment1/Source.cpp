@@ -41,8 +41,7 @@ const float cameraAngleSpeed = 0.95f;
 
 // name order within the position/rotation arrays
 // Craig, Sergio ???, ???, ???
-//kellys position in array
-int kpos = 0; //TODO
+
 
 // world rotations
 float rotationx = 0.0f;
@@ -251,8 +250,7 @@ struct SphereData { GLuint VAO, VBO, EBO; } bindSphereVAO() {
 }
 
 
-int Assignment2(GLFWwindow* window)
-{
+int Assignment2(GLFWwindow* window){
 
     Shader firstPass("firstPass.vs", "firstPass.fs");
     Shader shadow("shadow.vs", "shadow.fs");
@@ -830,6 +828,7 @@ int Assignment2(GLFWwindow* window)
             firstPass.setMat4("model", terrainModelMat);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
+
             // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
             // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
             // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
@@ -1216,20 +1215,23 @@ int Assignment2(GLFWwindow* window)
 
         // Kelly
         //--------------------------------------------------------------------------------------
+        glm::mat4 kBaseModelMat = safeBaseModelMat;
+        glm::mat4 uarmWorldMatrix;
+        glm::mat4 elbowWorldMatrix;
+        glm::mat4 larmScaleMatrix;
+        glm::mat4 wristWorldMatrix;
+        glm::mat4 racketWorldMatrix;
+
 
         if (true) {
 
-            glm::vec3 MIAMI_PINK = glm::vec3(1.0f, 0.40f, 1.0f);
-            glm::vec3 MIAMI_BLUE = glm::vec3(0.5f, 1.0f, 1.0f);
-            glm::vec3 WHITE_VEC3 = glm::vec3(1.0f, 1.0f, 1.0f);
-            
             //this is just here to be out of the way
             //doesnt need to be initialised more than once
             //float gUNIT = float(1) / float(100);
             //float init_size = gUNIT * 2;
             //based on this unit cube
             float init_size = 2.0f;
-            //float model_size = init_size*scaleFactor[kpos];
+            //float model_size = init_size*scaleFactor[3];
             float arm_size = 2 * init_size;
 
             firstPass.setMat4("model", baseModelMat);
@@ -1238,36 +1240,37 @@ int Assignment2(GLFWwindow* window)
            //glBindVertexArray(VAOs[5]); 
            //this is the VAO im using for model
 
-            glBindVertexArray(VAOs[5])
+            glBindVertexArray(VAOs[5]);
 
             //draw model
             //----------------------
             //this is like a shoulder joint, and it moves the upper arm
-            kBaseModelMat = safeBaseModelMat;
-
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(racketposx[kPos], racketposy[kPos], racketposz[kPos]));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotx[kPos]), glm::vec3(1.0f, 0.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmroty[kPos]), glm::vec3(0.0f, 1.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotz[kPos]), glm::vec3(0.0f, 0.0f, 1.0f));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(scaleFactor[kPos], scaleFactor[kPos], scaleFactor[kPos]));
-            //glm::mat4 modelWorldMatrix= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
             
-            firstPass.setMat4("model", modelWorldMatrix);
+
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(racketposx[3], racketposy[3], racketposz[3]));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
+            
+            firstPass.setMat4("model", kBaseModelMat);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             //draw upper arm
             //use a transform matrix on the upper arm 
             kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3((init_size / 2) + (init_size / 2), 0, 0));
             kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(2.0f, 1.0f, 1.0f));//twice as long
-            glm::mat4 uarmWorldMatrix = kBaseModelMat;
+            uarmWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", uarmWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             //draw elbow
             //use a transform matrix on the shoulder
-            kBaseModelMat = glm::translate(kBaseModelMat), glm::vec3((init_size)+(arm_size), 0, 0));
-            kBaseModelMat = glm::rotate(kBaseModelMat), glm::radians(uarmrotz[kpos]), (0.0f, 0.0f, 1.0f));
-            glm::mat4 elbowWorldMatrix = kBaseModelMat;
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3((init_size)+(arm_size), 0, 0));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
+            elbowWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", elbowWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -1275,7 +1278,7 @@ int Assignment2(GLFWwindow* window)
             //use a transform matrix on the elbow (to absorb its rotations)
             kBaseModelMat = glm::translate(glm::mat4(1.0f), glm::vec3((init_size / 2) + (arm_size / 2), 0, 0));
             kBaseModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 1.0f, 1.0f));
-            glm::mat4 larmScaleMatrix = kBaseModelMat;
+            larmScaleMatrix = kBaseModelMat;
             firstPass.setMat4("model", larmScaleMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -1283,8 +1286,10 @@ int Assignment2(GLFWwindow* window)
             //draw hand (wrist is for now the hand)
             //use a transform matrix on the elbow
             kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3((init_size)+(arm_size), 0, 0));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketroty[kPos]), (0.0f, 1.0f, 0.0f));
-            glm::mat4 wristWorldMatrix = kBaseModelMat;
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
+            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
+            wristWorldMatrix = kBaseModelMat;
 
             firstPass.setMat4("model", wristWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -1293,8 +1298,7 @@ int Assignment2(GLFWwindow* window)
             //transform wrist i kind of want it sticking through the hand so not translated all the way out
             kBaseModelMat = glm::translate(glm::mat4(1.0f), glm::vec3(init_size / 4, init_size / 5, init_size / 4));
             kBaseModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.5f, 0.50f, 0.50f));
-            kBaseModelMat = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[kPos]), (0.0f, 0.0f, 1.0f));
-            glm::mat4 racketWorldMatrix = kBaseModelMat;
+            racketWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", racketWorldMatrix);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -1962,6 +1966,67 @@ int Assignment2(GLFWwindow* window)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
 
+        //Kelly
+        //-----------------------------
+        if (true) {
+            //colours
+            glm::vec3 MIAMI_PINK = glm::vec3(1.0f, 0.40f, 1.0f);
+            glm::vec3 MIAMI_BLUE = glm::vec3(0.5f, 1.0f, 1.0f);
+            glm::vec3 WHITE_VEC3 = glm::vec3(1.0f, 1.0f, 1.0f);
+
+            glm::vec3 PURP = glm::vec3(0.58, 0.50, 1.00);
+            //-----------------------------------
+
+            /*  glm::mat4 kBaseModelMat = safeBaseModelMat;
+                glm::mat4 uarmWorldMatrix;
+                glm::mat4 elbowWorldMatrix;
+                glm::mat4 larmScaleMatrix;
+                glm::mat4 wristWorldMatrix;
+                glm::mat4 racketWorldMatrix;
+            */
+            
+            glBindVertexArray(VAOs[5]);
+            //shader.use();
+            shadow.setMat4("model", kBaseModelMat);
+            shadow.setVec3("trueColor",PURP); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
+            glDrawArrays(GL_TRIANGLES, 0, 36); 
+
+            shadow.setMat4("model", uarmWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            shadow.setMat4("model", elbowWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            shadow.setMat4("model", larmScaleMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            shadow.setMat4("model", wristWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            shadow.setVec3("trueColor", glm::vec3(0.5f, 0.5f, 0.5f)); // SETTING ALL OF RACKET TO BE GREY FOR NOW
+
+            // by doing one side of the racket and then the other, I can simply anchor the base of the next piece to the end of the last, simplifying some translation math
+            // 
+            // note how for every component, I translate, then scale, then rotate. 
+            // This allows me to easily anchor the base of the next component to the end of the last component. 
+            // It is a 'simple' translation because I only need to translate in the Y direction and the component will translate in the rotated Y, allowing it to align perfectly
+
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
+           
+            shadow.setVec3("trueColor", MIAMI_BLUE);
+            shadow.setMat4("model", racketWorldMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        }
+
+        baseModelMat = safeBaseModelMat;
+        glBindTexture(GL_TEXTURE_2D, white);
+
+        }
+
         // check and call events (poll IO) and swap the buffers
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -2141,7 +2206,7 @@ void processInput(GLFWwindow* window)
             uarmrotx[i] = 0.0f;
             uarmroty[i] = 0.0f;
             uarmrotz[i] = 0.0f;
-
+            
             // racket rotation
             racketrotx[i] = 0.0f;
             racketroty[i] = 0.0f;
