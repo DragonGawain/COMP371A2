@@ -1747,7 +1747,8 @@ int Assignment2(GLFWwindow* window)
 
             //visual representation of the light source location
             shadow.setMat4("model", baseModelMat);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
+            shadow.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
             //glDrawArrays(GL_TRIANGLES, 0, 36);
 
             baseModelMat = glm::translate(baseModelMat, glm::vec3(-0.1f, -25.0f, -5.0f));

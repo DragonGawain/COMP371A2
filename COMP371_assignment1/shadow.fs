@@ -9,6 +9,7 @@ in vec4 FragPosLightSpace;
 
 uniform vec3 trueColor;
 
+uniform vec3 lightColor;
 
 uniform sampler2D diffuseTexture;
 uniform sampler2D shadowMap;
@@ -59,7 +60,7 @@ void main()
     vec3 color = texture(diffuseTexture, VSTexCoords).rgb;
     color *= trueColor;
     vec3 normal = normalize(Normal);
-    vec3 lightColor = vec3(0.5);
+    //lightColor = vec3(1.0, 0.0, 0.0);
     // ambient
     vec3 ambient = 0.3 * lightColor;
     // diffuse
