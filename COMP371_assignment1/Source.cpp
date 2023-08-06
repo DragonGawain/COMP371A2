@@ -372,6 +372,30 @@ int Assignment2(GLFWwindow* window)
     }
     stbi_image_free(data);
 
+    unsigned int glossy;
+    glGenTextures(1, &glossy);
+    glBindTexture(GL_TEXTURE_2D, glossy);
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // load and generate the texture
+    data = stbi_load("glossy.jpg", &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
 
     // shadow mapping
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
@@ -1314,6 +1338,10 @@ int Assignment2(GLFWwindow* window)
             // This allows me to easily anchor the base of the next component to the end of the last component. 
             // It is a 'simple' translation because I only need to translate in the Y direction and the component will translate in the rotated Y, allowing it to align perfectly
 
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
             // RACKET LEFT
             // racket component 1 - bottom left
             baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -1409,6 +1437,7 @@ int Assignment2(GLFWwindow* window)
         }
 
         baseModelMat = safeBaseModelMat;
+        glBindTexture(GL_TEXTURE_2D, white);
 
         // Sergio
         if (true) {
@@ -1419,7 +1448,7 @@ int Assignment2(GLFWwindow* window)
             auto skinColor = glm::vec3(0.945f, 0.760f, 0.490f);
 
             glm::mat4 baseModel =
-                safeBaseModelMat *
+                baseModelMat *
                 glm::translate(glm::mat4(1.0f), glm::vec3(racketposx[1], racketposy[1], racketposz[1])) *
                 glm::scale(glm::mat4(1.0), glm::vec3(scaleFactor[1], scaleFactor[1], scaleFactor[1]));
 
@@ -1478,6 +1507,10 @@ int Assignment2(GLFWwindow* window)
 
 
             // Tennis Racket Parts
+            if (textureToggle)
+            {
+                glBindTexture(GL_TEXTURE_2D, glossy);
+            }
 
             glm::mat4 racketHandle = tennisRacket
                 * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 1.75f / 2, 0.2f));
