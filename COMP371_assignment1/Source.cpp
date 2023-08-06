@@ -49,7 +49,7 @@ float rotationz = 0.0f;
 const float rotationFactor = 2.5f;
 
 // complete model scaling
-float scaleFactor[5] = { 0.5f, 1.0f, 1.0f, 1.0f, 1.0f };
+float scaleFactor[5] = { 0.5f, 2.0f, 1.0f, 1.0f, 1.0f };
 const float scaleFactorModifier = 0.001f;
 
 // complete model movement
@@ -438,7 +438,6 @@ int Assignment2(GLFWwindow* window)
     defineSphereVertexArray();
     defineSphereIndexArray();
     SphereData sphere = bindSphereVAO();
-
 
     glEnable(GL_DEPTH_TEST);
 
@@ -867,7 +866,20 @@ int Assignment2(GLFWwindow* window)
             baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
             baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f));
 
-            //shader.setVec3("trueColor", glm::vec3(0.5f, 0.5f, 0.5f)); // SETTING ALL OF RACKET TO BE GREY FOR NOW
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 5.0f));
+            firstPass.setMat4("model", baseModelMat);
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -8.0f, -5.0f));
+            glBindVertexArray(VAOs[5]);
 
             // by doing one side of the racket and then the other, I can simply anchor the base of the next piece to the end of the last, simplifying some translation math
             // 
@@ -1046,7 +1058,21 @@ int Assignment2(GLFWwindow* window)
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
+            baseModel = glm::translate(baseModel, glm::vec3(0.0f, 4.0f, 3.0f));
+            baseModel = glm::scale(baseModel, glm::vec3(0.625f, 0.625f, 0.625f));
+            firstPass.setMat4("model", baseModel);
 
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+            baseModel = glm::scale(baseModel, glm::vec3(1.6f, 1.6f, 1.6f));
+            baseModel = glm::translate(baseModel, glm::vec3(0.0f, -3.0f, -3.0f));
+            glBindVertexArray(VAOs[5]);
 
             //changeTexture(metalTexture);
             // Left Side
@@ -1482,7 +1508,21 @@ int Assignment2(GLFWwindow* window)
             baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[0]), glm::vec3(0.0f, 1.0f, 0.0f));
             baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[0]), glm::vec3(0.0f, 0.0f, 1.0f));
 
-            shadow.setVec3("trueColor", glm::vec3(0.5f, 0.5f, 0.5f)); // SETTING ALL OF RACKET TO BE GREY FOR NOW
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 5.0f));
+            shadow.setMat4("model", baseModelMat);
+            shadow.setVec3("trueColor", glm::vec3(0.1f, 0.9f, 0.1f));
+
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+
+            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -8.0f, -5.0f));
+            glBindVertexArray(VAOs[5]);
 
             // by doing one side of the racket and then the other, I can simply anchor the base of the next piece to the end of the last, simplifying some translation math
             // 
@@ -1561,6 +1601,8 @@ int Assignment2(GLFWwindow* window)
             shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
             shadow.setMat4("model", racketCompModelMat);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            
 
             // racket mesh
             shadow.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.5f));
@@ -1673,7 +1715,22 @@ int Assignment2(GLFWwindow* window)
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
+            baseModel = glm::translate(baseModel, glm::vec3(0.0f, 4.0f, 3.0f));
+            baseModel = glm::scale(baseModel, glm::vec3(0.625f, 0.625f, 0.625f));
+            shadow.setMat4("model", baseModel);
+            shadow.setVec3("trueColor", glm::vec3(0.1f, 0.9f, 0.1f));
 
+            // Sphere
+            // Sphere VAO, VBO and EBO
+            glBindVertexArray(sphere.VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
+            // Texture
+            // TODO: apply texture on tennis ball
+            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
+            baseModel = glm::scale(baseModel, glm::vec3(1.6f, 1.6f, 1.6f));
+            baseModel = glm::translate(baseModel, glm::vec3(0.0f, -3.0f, -3.0f));
+            glBindVertexArray(VAOs[5]);
 
             //changeTexture(metalTexture);
             // Left Side
@@ -1851,27 +1908,7 @@ int Assignment2(GLFWwindow* window)
         }
 
 
-        // Sphere
         
-        if (true) {
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-
-            // Texture
-            // TODO: apply texture on tennis ball
-
-            // World orientation
-            glm::mat4 worldMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(20.0f, 0.0f, -10.0f)));
-            shadow.setVec3("trueColor", glm::vec3(0.5f, 0.0f, 1.0f));
-            shadow.setMat4("model", worldMatrix);
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-
-            glBindVertexArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
 
         // check and call events (poll IO) and swap the buffers
         glfwPollEvents();
@@ -2076,7 +2113,8 @@ void processInput(GLFWwindow* window)
         racketposz[4] = 10.0f;
 
         // custom initial scales
-        scaleFactor[0] = 0.5;
+        scaleFactor[0] = 0.5f;
+        scaleFactor[1] = 2.0f;
 
 
         // camera position
