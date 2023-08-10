@@ -27,9 +27,9 @@ int SCR_HEIGHT = 768;
 // camera
 // angle
 float pitch = -45.0f;
-float yaw = 270.0f;
+float yaw = 0.0f;
 // position
-glm::vec3 position = glm::vec3(0.0f, 30.0f, 15.0f);
+glm::vec3 position = glm::vec3(-15.0f, 30.0f, 0.0f);
 // relative directions (relative to the camera itself and where it is looking)
 glm::vec3 front;
 glm::vec3 right;
@@ -92,18 +92,19 @@ bool canTextureToggle = true;
 // lighting
 glm::vec3 lightPos(0.0f, 30.0f, 0.0f);
 
-// camera
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
-
 // sphere/collision system
+glm::mat4 sphereModelMat = glm::mat4(1.0f);
 bool sphereDir = true;
 glm::vec3 sphereMovement(0.0f, 0.0f, 0.1f);
 const glm::vec3 DIST(5.0f, 5.0f, 1.0f);
 int intersector;
 glm::mat4 finalRacketModelMat[2] = {glm::mat4(1.0f), glm::mat4(1.0f)};
 
+// collision system - hitbox
+glm::vec3 Xvector = glm::vec3(1.0f, 0.0f, 0.0f);
+glm::vec3 Yvector = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 Zvector = glm::vec3(0.0f, 0.0f, 1.0f);
+glm::vec3 hitbox = glm::vec3(1.0f, 1.0f, 1.0f);
 
 const int sphereStacks = 128; // Number of horizontal cuts
 const int sphereSectors = 256; // Number of vertical cuts
@@ -732,7 +733,7 @@ int Assignment2(GLFWwindow* window)
     glm::mat4 axisModel = glm::mat4(1.0f);
     glm::mat4 safeBaseModelMat = glm::mat4(1.0f);
 
-    glm::mat4 sphereModelMat = glm::mat4(1.0f);
+    
     sphereModelMat = glm::translate(sphereModelMat, glm::vec3(3.0f, 11.0f, 0.0f));
 
     // set up the shadow shader with default values
@@ -1150,15 +1151,35 @@ int Assignment2(GLFWwindow* window)
             sphereDir = true;
         }*/
 
-        finalRacketModelMat[0] = glm::translate(finalRacketModelMat[0], glm::vec3(0.0f, 0.0f, 1.0f));
-        std::cout << "X: " << finalRacketModelMat[0][3][0] << ", Y: " << finalRacketModelMat[0][3][1] << ", Z: " << finalRacketModelMat[0][3][2] << std::endl;
-        finalRacketModelMat[0] = glm::translate(finalRacketModelMat[0], glm::vec3(0.0f, 0.0f, -1.0f));
+        //finalRacketModelMat[0] = glm::translate(finalRacketModelMat[0], glm::vec3(0.0f, 0.0f, 1.0f));
+        //std::cout << "X: " << finalRacketModelMat[0][3][0] << ", Y: " << finalRacketModelMat[0][3][1] << ", Z: " << finalRacketModelMat[0][3][2] << std::endl;
+        //finalRacketModelMat[0] = glm::translate(finalRacketModelMat[0], glm::vec3(0.0f, 0.0f, -1.0f));
 
         intersector = -1;
         for (int i = 0; i < 2; i++) 
         {
+            // calculate the X, Y, and Z vectors for each racket before doing the collision check
+            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(1.0f, 0.0f, 0.0f));
+            Xvector = glm::normalize(glm::vec3(finalRacketModelMat[i][3][0], finalRacketModelMat[i][3][1], finalRacketModelMat[i][3][2]));
+            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(-1.0f, 0.0f, 0.0f));
+
+            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 1.0f, 0.0f));
+            Yvector = glm::normalize(glm::vec3(finalRacketModelMat[i][3][0], finalRacketModelMat[i][3][1], finalRacketModelMat[i][3][2]));
+            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, -1.0f, 0.0f));
+            
+            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 0.0f, 1.0f));
+            Zvector = glm::normalize(glm::vec3(finalRacketModelMat[i][3][0], finalRacketModelMat[i][3][1], finalRacketModelMat[i][3][2]));
+            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 0.0f, -1.0f));
+
+            hitbox = Xvector + Yvector + Zvector;
+
+            hitbox.x *= 3;
+            hitbox.y *= 5;
+            std::cout << "X: " << hitbox.x << ", Y: " << hitbox.y << ", Z: " << hitbox.z << std::endl;
+            //hitbox.z *= 1;
+
             //std::cout << i << ": X: " << abs(sphereModelMat[3][0] - racketposx[i]) << ", Y: " << abs(sphereModelMat[3][1] - (racketposy[i] - 11.0f)) << ", Z: " << abs(sphereModelMat[3][2] - racketposz[i]) << std::endl;
-            if ((abs(sphereModelMat[3][0] - racketposx[i]) <= DIST.x) && (abs(sphereModelMat[3][1] - (racketposy[i] + 11.0f)) <= DIST.y) && (abs(sphereModelMat[3][2] - racketposz[i]) <= DIST.z))
+            if ((abs(sphereModelMat[3][0] - (racketposx[i] + 3.0f)) <= abs(hitbox.x)) && (abs(sphereModelMat[3][1] - (racketposy[i] + 11.0f)) <= abs(hitbox.y)) && (abs(sphereModelMat[3][2] - racketposz[i]) <= abs(hitbox.z)))
             {
                 //bool intersect = true
                 intersector = i;
@@ -1174,17 +1195,16 @@ int Assignment2(GLFWwindow* window)
             if (racketposz[intersector] < 0)
             {
                 finalRacketModelMat[intersector] = glm::translate(finalRacketModelMat[intersector], glm::vec3(0.0f, 0.0f, 1.0f));
-                sphereMovement = glm::vec3(finalRacketModelMat[intersector][3][0], finalRacketModelMat[intersector][3][1], finalRacketModelMat[intersector][3][2]);
-                sphereMovement = glm::normalize(sphereMovement);
+                sphereMovement = glm::normalize(glm::vec3(finalRacketModelMat[intersector][3][0], finalRacketModelMat[intersector][3][1], finalRacketModelMat[intersector][3][2]));
                 sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10, sphereMovement.z / 10);
             }
             else
             {
                 finalRacketModelMat[intersector] = glm::translate(finalRacketModelMat[intersector], glm::vec3(0.0f, 0.0f, -1.0f));
-                sphereMovement = glm::vec3(finalRacketModelMat[intersector][3][0], finalRacketModelMat[intersector][3][1], finalRacketModelMat[intersector][3][2]);
-                sphereMovement = glm::normalize(sphereMovement);
+                sphereMovement = glm::normalize(glm::vec3(finalRacketModelMat[intersector][3][0], finalRacketModelMat[intersector][3][1], finalRacketModelMat[intersector][3][2]));
                 sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10, sphereMovement.z / 10);
             }
+            std::cout << "Movement vector: X: " << sphereMovement.x << ", Y: " << sphereMovement.y << ", Z: " << sphereMovement.z << std::endl;
         }
 
 
@@ -3002,10 +3022,10 @@ void processInput(GLFWwindow* window)
 
 
         // camera position
-        position = glm::vec3(0.0f, 30.0f, 15.0f);
+        position = glm::vec3(-15.0f, 30.0f, 0.0f);
 
         // camera angle
-        yaw = 270.0f;
+        yaw = 0.0f;
         pitch = -45.0f;
 
         // model component selector
@@ -3013,9 +3033,10 @@ void processInput(GLFWwindow* window)
 
         // model selector
         controller = 0;
-        //std::cout << "selectors reset: " << std::endl;
-        //std::cout << "lower arm selected" << std::endl;
-        //std::cout << "Craig's model selected!" << std::endl;
+
+        sphereModelMat = glm::mat4(1.0f);
+        sphereModelMat = glm::translate(sphereModelMat, glm::vec3(3.0f, 11.0f, 0.0f));
+        sphereMovement = glm::vec3(0.0f, 0.0f, 0.1f);
 
     }
 
