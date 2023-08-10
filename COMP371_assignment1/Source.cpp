@@ -99,6 +99,7 @@ glm::vec3 sphereMovement(0.0f, 0.0f, 0.1f);
 const glm::vec3 DIST(5.0f, 5.0f, 1.0f);
 int intersector;
 glm::mat4 finalRacketModelMat[2] = {glm::mat4(1.0f), glm::mat4(1.0f)};
+glm::mat4 finalRacketRotations[2] = { glm::mat4(1.0f), glm::mat4(1.0f) };
 const float gravity = 0.005f;
 const float racketBounce = 0.1f;
 const float groundBounce = 0.3f;
@@ -983,18 +984,39 @@ int Assignment2(GLFWwindow* window)
             // Craig
             if (true)
             {
-                finalRacketModelMat[miniController] = safeBaseModelMat;
+                
+                baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[miniController], racketposy[miniController], racketposz[miniController])); // translates entire model - rooted at origin
+                finalRacketModelMat[miniController] = baseModelMat;
+
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(larmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(larmrotz[miniController] - 315.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
+                finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(uarmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(uarmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(uarmrotz[miniController] - 45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
+                finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, 9.0f, 0.0f));
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
                 finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+                finalRacketRotations[miniController] = glm::mat4(1.0f);
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(larmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(larmrotz[miniController] - 315.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(uarmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(uarmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(uarmrotz[miniController] - 45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
+                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+                //finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, -17.0f, 0.0f));
+                
 
 
                 // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
@@ -1002,7 +1024,7 @@ int Assignment2(GLFWwindow* window)
                 // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
 
                 // scaling matrix - top of hierarchy
-                baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[miniController], racketposy[miniController], racketposz[miniController])); // translates entire model - rooted at origin
+                
                 baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[miniController], scaleFactor[miniController], scaleFactor[miniController])); // scales entire model
                 // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
                 baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -1036,8 +1058,8 @@ int Assignment2(GLFWwindow* window)
                 baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
                 baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
                 baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                
+                finalRacketModelMat[miniController] = baseModelMat;
+                finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, 4.0f, 0.0f));
 
                 // by doing one side of the racket and then the other, I can simply anchor the base of the next piece to the end of the last, simplifying some translation math
                 // 
@@ -1141,7 +1163,7 @@ int Assignment2(GLFWwindow* window)
 
             }
         }
-
+        
         //sphereModelMat = safeBaseModelMat;
         // Sphere
 
@@ -1163,31 +1185,49 @@ int Assignment2(GLFWwindow* window)
         intersector = -1;
         for (int i = 0; i < 2; i++) 
         {
+            std::cout << finalRacketRotations[i][3][0] << std::endl;
+            std::cout << finalRacketRotations[i][3][1] << std::endl;
+            std::cout << finalRacketRotations[i][3][2] << std::endl;
             // calculate the X, Y, and Z vectors for each racket before doing the collision check
-            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(1.0f, 0.0f, 0.0f));
-            Xvector = glm::normalize(glm::vec3(finalRacketModelMat[i][3][0], finalRacketModelMat[i][3][1], finalRacketModelMat[i][3][2]));
-            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(-1.0f, 0.0f, 0.0f));
+            finalRacketRotations[i] = glm::translate(finalRacketRotations[i], glm::vec3(1.0f, 0.0f, 0.0f));
+            Xvector = glm::normalize(glm::vec3(finalRacketRotations[i][3][0], finalRacketRotations[i][3][1], finalRacketRotations[i][3][2]));
+            finalRacketRotations[i] = glm::translate(finalRacketRotations[i], glm::vec3(-1.0f, 0.0f, 0.0f));
 
-            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 1.0f, 0.0f));
-            Yvector = glm::normalize(glm::vec3(finalRacketModelMat[i][3][0], finalRacketModelMat[i][3][1], finalRacketModelMat[i][3][2]));
-            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, -1.0f, 0.0f));
+            finalRacketRotations[i] = glm::translate(finalRacketRotations[i], glm::vec3(0.0f, 1.0f, 0.0f));
+            Yvector = glm::normalize(glm::vec3(finalRacketRotations[i][3][0], finalRacketRotations[i][3][1], finalRacketRotations[i][3][2]));
+            finalRacketRotations[i] = glm::translate(finalRacketRotations[i], glm::vec3(0.0f, -1.0f, 0.0f));
             
-            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 0.0f, 1.0f));
-            Zvector = glm::normalize(glm::vec3(finalRacketModelMat[i][3][0], finalRacketModelMat[i][3][1], finalRacketModelMat[i][3][2]));
-            finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 0.0f, -1.0f));
+            finalRacketRotations[i] = glm::translate(finalRacketRotations[i], glm::vec3(0.0f, 0.0f, 1.0f));
+            Zvector = glm::normalize(glm::vec3(finalRacketRotations[i][3][0], finalRacketRotations[i][3][1], finalRacketRotations[i][3][2]));
+            finalRacketRotations[i] = glm::translate(finalRacketRotations[i], glm::vec3(0.0f, 0.0f, -1.0f));
+
+            std::cout << "X: " << Xvector.x << ", " << Xvector.y << ", " << Xvector.z << std::endl;
+            std::cout << "Y: " << Yvector.x << ", " << Yvector.y << ", " << Yvector.z << std::endl;
+            std::cout << "Z: " << Zvector.x << ", " << Zvector.y << ", " << Zvector.z << std::endl;
 
             Xvector *= 3;
             Yvector *= 5;
 
             hitbox = Xvector + Yvector + Zvector;
 
+            std::cout << "hitbox: " << hitbox.x << ", " << hitbox.y << ", " << hitbox.z << std::endl;
+
             //hitbox.x *= 3;
             //hitbox.y *= 5;
-            std::cout << "X: " << hitbox.x << ", Y: " << hitbox.y << ", Z: " << hitbox.z << std::endl;
+            
+            //std::cout << racketposy[i] + 3.67157f << std::endl;
+            //std::cout << (finalRacketModelMat[i][3][1] + 3.67157f) << std::endl;
+            //std::cout << abs(sphereModelMat[3][1] - (finalRacketModelMat[i][3][1] + 3.67157f)) << std::endl;
             //hitbox.z *= 1;
 
+            std::cout << i << std::endl;
+            std::cout << "X: " << abs(sphereModelMat[3][0] - (finalRacketModelMat[i][3][0])) << ", Y: " << abs(sphereModelMat[3][1] - (finalRacketModelMat[i][3][1] + 3.67157f)) << ", Z: " << abs(sphereModelMat[3][2] - finalRacketModelMat[i][3][2]) << std::endl;
+            //finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 0.0f, 1.0f));
+            //std::cout << "X: " << finalRacketModelMat[i][3][0] << ", Y: " << finalRacketModelMat[i][3][1] + 3.67157f << ", Z: " << finalRacketModelMat[i][3][2] << std::endl;
+            //finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 0.0f, -1.0f));
+
             //std::cout << i << ": X: " << abs(sphereModelMat[3][0] - racketposx[i]) << ", Y: " << abs(sphereModelMat[3][1] - (racketposy[i] - 11.0f)) << ", Z: " << abs(sphereModelMat[3][2] - racketposz[i]) << std::endl;
-            if ((abs(sphereModelMat[3][0] - (racketposx[i] + 3.0f)) <= abs(hitbox.x)) && (abs(sphereModelMat[3][1] - (racketposy[i] + 11.0f)) <= abs(hitbox.y)) && (abs(sphereModelMat[3][2] - racketposz[i]) <= abs(hitbox.z)))
+            if ((abs(sphereModelMat[3][0] - (finalRacketModelMat[i][3][0])) <= abs(hitbox.x)) && (abs(sphereModelMat[3][1] - (finalRacketModelMat[i][3][1])) <= abs(hitbox.y)) && (abs(sphereModelMat[3][2] - finalRacketModelMat[i][3][2]) <= abs(hitbox.z)))
             {
                 //bool intersect = true
                 intersector = i;
@@ -1199,6 +1239,9 @@ int Assignment2(GLFWwindow* window)
 
         if (intersector != -1 && racketBounceTimer <= 0)
         {
+            finalRacketModelMat[intersector][3][0] = 0.0f;
+            finalRacketModelMat[intersector][3][1] = 0.0f;
+            finalRacketModelMat[intersector][3][2] = 0.0f;
             racketBounceTimer = 30;
             std::cout << "TARGET" << std::endl;
             if (racketposz[intersector] < 0)
