@@ -99,6 +99,8 @@ glm::vec3 sphereMovement(0.0f, 0.0f, 0.1f);
 const glm::vec3 DIST(5.0f, 5.0f, 1.0f);
 int intersector;
 glm::mat4 finalRacketModelMat[2] = {glm::mat4(1.0f), glm::mat4(1.0f)};
+const float gravity = 0.01f;
+int timer = 0;
 
 // collision system - hitbox
 glm::vec3 Xvector = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -1196,16 +1198,18 @@ int Assignment2(GLFWwindow* window)
             {
                 finalRacketModelMat[intersector] = glm::translate(finalRacketModelMat[intersector], glm::vec3(0.0f, 0.0f, 1.0f));
                 sphereMovement = glm::normalize(glm::vec3(finalRacketModelMat[intersector][3][0], finalRacketModelMat[intersector][3][1], finalRacketModelMat[intersector][3][2]));
-                sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10, sphereMovement.z / 10);
+                sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10 + 0.1f, sphereMovement.z / 10);
             }
             else
             {
                 finalRacketModelMat[intersector] = glm::translate(finalRacketModelMat[intersector], glm::vec3(0.0f, 0.0f, -1.0f));
                 sphereMovement = glm::normalize(glm::vec3(finalRacketModelMat[intersector][3][0], finalRacketModelMat[intersector][3][1], finalRacketModelMat[intersector][3][2]));
-                sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10, sphereMovement.z / 10);
+                sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10 + 0.1f, sphereMovement.z / 10);
             }
             std::cout << "Movement vector: X: " << sphereMovement.x << ", Y: " << sphereMovement.y << ", Z: " << sphereMovement.z << std::endl;
         }
+
+        
 
 
         /*
@@ -1215,6 +1219,18 @@ int Assignment2(GLFWwindow* window)
             sphereModelMat = glm::translate(sphereModelMat, glm::vec3(0.0f, 0.0f, -0.1f));
         */
         sphereModelMat = glm::translate(sphereModelMat, sphereMovement);
+
+        // gravity control
+        if (sphereModelMat[3][1] <= 0.01 && timer <= 0)
+        {
+            sphereMovement.y = 0.4f;
+            timer = 5;
+        }
+        else
+        {
+            sphereMovement.y -= gravity;
+            timer--;
+        }
 
         firstPass.setMat4("model", sphereModelMat);
         // Sphere VAO, VBO and EBO
@@ -3034,9 +3050,11 @@ void processInput(GLFWwindow* window)
         // model selector
         controller = 0;
 
+        // sphere/collision system
         sphereModelMat = glm::mat4(1.0f);
         sphereModelMat = glm::translate(sphereModelMat, glm::vec3(3.0f, 11.0f, 0.0f));
         sphereMovement = glm::vec3(0.0f, 0.0f, 0.1f);
+        timer = 0;
 
     }
 
