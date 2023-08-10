@@ -99,8 +99,11 @@ glm::vec3 sphereMovement(0.0f, 0.0f, 0.1f);
 const glm::vec3 DIST(5.0f, 5.0f, 1.0f);
 int intersector;
 glm::mat4 finalRacketModelMat[2] = {glm::mat4(1.0f), glm::mat4(1.0f)};
-const float gravity = 0.01f;
-int timer = 0;
+const float gravity = 0.005f;
+const float racketBounce = 0.1f;
+const float groundBounce = 0.3f;
+int groundBounceTimer = 0;
+int racketBounceTimer = 0;
 
 // collision system - hitbox
 glm::vec3 Xvector = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -1173,10 +1176,13 @@ int Assignment2(GLFWwindow* window)
             Zvector = glm::normalize(glm::vec3(finalRacketModelMat[i][3][0], finalRacketModelMat[i][3][1], finalRacketModelMat[i][3][2]));
             finalRacketModelMat[i] = glm::translate(finalRacketModelMat[i], glm::vec3(0.0f, 0.0f, -1.0f));
 
+            Xvector *= 3;
+            Yvector *= 5;
+
             hitbox = Xvector + Yvector + Zvector;
 
-            hitbox.x *= 3;
-            hitbox.y *= 5;
+            //hitbox.x *= 3;
+            //hitbox.y *= 5;
             std::cout << "X: " << hitbox.x << ", Y: " << hitbox.y << ", Z: " << hitbox.z << std::endl;
             //hitbox.z *= 1;
 
@@ -1191,8 +1197,9 @@ int Assignment2(GLFWwindow* window)
         }
 
 
-        if (intersector != -1)
+        if (intersector != -1 && racketBounceTimer <= 0)
         {
+            racketBounceTimer = 30;
             std::cout << "TARGET" << std::endl;
             if (racketposz[intersector] < 0)
             {
@@ -1204,10 +1211,12 @@ int Assignment2(GLFWwindow* window)
             {
                 finalRacketModelMat[intersector] = glm::translate(finalRacketModelMat[intersector], glm::vec3(0.0f, 0.0f, -1.0f));
                 sphereMovement = glm::normalize(glm::vec3(finalRacketModelMat[intersector][3][0], finalRacketModelMat[intersector][3][1], finalRacketModelMat[intersector][3][2]));
-                sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10 + 0.1f, sphereMovement.z / 10);
+                sphereMovement = glm::vec3(sphereMovement.x / 10, sphereMovement.y / 10 + racketBounce, sphereMovement.z / 10);
             }
             std::cout << "Movement vector: X: " << sphereMovement.x << ", Y: " << sphereMovement.y << ", Z: " << sphereMovement.z << std::endl;
         }
+        else
+            racketBounceTimer--;
 
         
 
@@ -1221,15 +1230,15 @@ int Assignment2(GLFWwindow* window)
         sphereModelMat = glm::translate(sphereModelMat, sphereMovement);
 
         // gravity control
-        if (sphereModelMat[3][1] <= 0.01 && timer <= 0)
+        if (sphereModelMat[3][1] <= 0.01 && groundBounceTimer <= 0)
         {
-            sphereMovement.y = 0.4f;
-            timer = 5;
+            sphereMovement.y = groundBounce;
+            groundBounceTimer = 5;
         }
         else
         {
             sphereMovement.y -= gravity;
-            timer--;
+            groundBounceTimer--;
         }
 
         firstPass.setMat4("model", sphereModelMat);
@@ -3054,7 +3063,8 @@ void processInput(GLFWwindow* window)
         sphereModelMat = glm::mat4(1.0f);
         sphereModelMat = glm::translate(sphereModelMat, glm::vec3(3.0f, 11.0f, 0.0f));
         sphereMovement = glm::vec3(0.0f, 0.0f, 0.1f);
-        timer = 0;
+        groundBounceTimer = 0;
+        racketBounceTimer = 0;
 
     }
 
@@ -3319,7 +3329,7 @@ void processInput(GLFWwindow* window)
         if (canChangeController)
         {
             controller++;
-            if (controller == 5)
+            if (controller == 2)
             {
                 controller = 0;
             }
@@ -3328,20 +3338,17 @@ void processInput(GLFWwindow* window)
             switch (controller)
             {
             case 0:
-                std::cout << "Craig's model selected!" << std::endl;
+                std::cout << "Player 1 selected!" << std::endl;
                 break;
             case 1:
-                std::cout << "Sergio's model selected!" << std::endl;
+                std::cout << "Player 2 selected!" << std::endl;
                 break;
-            case 2:
-                std::cout << "Afaf's model selected!" << std::endl;
-                break;
-            case 3:
-                std::cout << "Kelly's model selected!" << std::endl;
-                break;
-            case 4:
-                std::cout << "Jordan's model selected!" << std::endl;
-                break;
+            //case 2:
+                //std::cout << "Afaf's model selected!" << std::endl;
+                //break;
+            //case 3:
+                //std::cout << "Kelly's model selected!" << std::endl;
+                //break;
             }
 
         }
