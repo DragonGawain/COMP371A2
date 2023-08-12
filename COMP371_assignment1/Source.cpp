@@ -16,6 +16,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void renderScene(Shader shader, glm::mat4 baseMat, unsigned int VAOs[6]);
+void renderGrid(Shader shader, glm::mat4 baseMat, unsigned int VAOs[6]);
+void renderRacket(Shader shader, glm::mat4 baseMat, unsigned int VAOs[6], int miniController);
 
 // Settings (for easy adjustability)
 int SCR_WIDTH = 1024;
@@ -88,7 +91,12 @@ bool canToggleShadow = true;
 // texture toggle
 bool textureToggle = true;
 bool canTextureToggle = true;
-
+// Texture Declaration
+unsigned int glossy;
+unsigned int clay;
+unsigned int triColor;
+unsigned int tennisBall;
+unsigned int white;
 // lighting
 glm::vec3 lightPos(0.0f, 30.0f, 0.0f);
 
@@ -513,34 +521,34 @@ int Assignment2(GLFWwindow* window)
 
 
 
-    unsigned int afafVAO;
-    unsigned int afafVBO;
+    //unsigned int afafVAO;
+    //unsigned int afafVBO;
 
 
 
 
-    glGenVertexArrays(1, &afafVAO);
-    glBindVertexArray(afafVAO);
+    //glGenVertexArrays(1, &afafVAO);
+    //glBindVertexArray(afafVAO);
 
 
-    glGenBuffers(1, &afafVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, afafVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+    //glGenBuffers(1, &afafVBO);
+    //glBindBuffer(GL_ARRAY_BUFFER, afafVBO);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
 
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
 
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 3));
-    glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 3));
+    //glEnableVertexAttribArray(1);
 
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 6));
-    glEnableVertexAttribArray(2);
+    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(sizeof(float) * 6));
+    //glEnableVertexAttribArray(2);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glBindVertexArray(0);
 
 
     // Sphere
@@ -551,7 +559,7 @@ int Assignment2(GLFWwindow* window)
     glEnable(GL_DEPTH_TEST);
 
     // texture
-    unsigned int clay;
+    //unsigned int clay;
     glGenTextures(1, &clay);
 
     glBindTexture(GL_TEXTURE_2D, clay);
@@ -579,7 +587,7 @@ int Assignment2(GLFWwindow* window)
     }
     stbi_image_free(data);
 
-    unsigned int triColor;
+    //unsigned int triColor;
 
     glGenTextures(1, &triColor);
     glBindTexture(GL_TEXTURE_2D, triColor);
@@ -608,7 +616,7 @@ int Assignment2(GLFWwindow* window)
     }
     stbi_image_free(data);
 
-    unsigned int white;
+    //unsigned int white;
     glGenTextures(1, &white);
     glBindTexture(GL_TEXTURE_2D, white);
 
@@ -632,7 +640,7 @@ int Assignment2(GLFWwindow* window)
     }
     stbi_image_free(data);
 
-    unsigned int glossy;
+    //unsigned int glossy;
     glGenTextures(1, &glossy);
     glBindTexture(GL_TEXTURE_2D, glossy);
 
@@ -657,7 +665,7 @@ int Assignment2(GLFWwindow* window)
     stbi_image_free(data);
 
 
-    unsigned int tennisBall;
+    //unsigned int tennisBall;
     glGenTextures(1, &tennisBall);
     glBindTexture(GL_TEXTURE_2D, tennisBall);
 
@@ -820,350 +828,8 @@ int Assignment2(GLFWwindow* window)
         safeBaseModelMat = baseModelMat;
 
         // gridlines, coordinate markers, terrain
-        if (true)
-        {
-            firstPass.setMat4("model", baseModelMat);
+        renderScene(firstPass,baseModelMat,VAOs);
 
-
-            // x coord marker
-            //shader.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f)); // set color for x coord marker
-            glBindVertexArray(VAOs[5]);
-            axisModel = glm::translate(baseModelMat, glm::vec3(5.0f, 0.0f, 0.0f));
-            axisModel = glm::scale(axisModel, glm::vec3(5.0f, 0.5f, 0.5f));
-            firstPass.setMat4("model", axisModel);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // z coord marker
-            //shader.setVec3("trueColor", glm::vec3(0.0f, 0.0f, 1.0f)); // set color for z coord marker
-            glBindVertexArray(VAOs[5]);
-            axisModel = glm::translate(baseModelMat, glm::vec3(0.0f, 0.0f, 5.0f));
-            axisModel = glm::scale(axisModel, glm::vec3(0.5f, 0.5f, 5.0f));
-            firstPass.setMat4("model", axisModel);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // y coord marker
-            //shader.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.0f)); // set color for y coord marker
-            glBindVertexArray(VAOs[5]);
-            axisModel = glm::scale(baseModelMat, glm::vec3(0.5f, 5.0f, 0.5f));
-            firstPass.setMat4("model", axisModel);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            //shader.setVec3("trueColor", glm::vec3(0.0f, 0.8f, 0.0f)); // set color for gridlines
-
-            // x gridlines
-            glBindVertexArray(VAOs[0]);
-            for (int i = 0; i < 101; i++)
-            {
-                // there is just a single line. It is drawn multiple times in different places by manipulating a custom model matrix for the gridlines
-                modelx = glm::translate(baseModelMat, glm::vec3(0, 0, -50.0f + i));
-                firstPass.setMat4("model", modelx);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-            // z gridlines
-            glBindVertexArray(VAOs[1]);
-            for (int i = 0; i < 101; i++)
-            {
-                // same as x gridlines
-                modelz = glm::translate(baseModelMat, glm::vec3(-50.0f + i, 0, 0));
-                firstPass.setMat4("model", modelz);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-
-            // NET
-            // net (using the X gridlines for the horizontal portion of the net)
-            glBindVertexArray(VAOs[0]);
-            for (int i = 0; i < 16; i++)
-            {
-                // same as x gridlines
-                modelx = glm::translate(baseModelMat, glm::vec3(0.0f, 2.0f + i / 2, 0));
-                firstPass.setMat4("model", modelx);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-            // vertical net bits
-            glBindVertexArray(VAOs[3]);
-            for (int i = 0; i < 37; i++)
-            {
-                // same as x gridlines
-                netModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f + i, 0, 0));
-                firstPass.setMat4("model", netModelMat);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-            // texture for net posts
-            // top part of the net
-            glBindVertexArray(VAOs[4]);
-            modelx = glm::scale(modelx, glm::vec3(18.0f, 0.5f, 0.2f));
-            firstPass.setMat4("model", modelx);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // right post of net
-            netModelMat = glm::scale(netModelMat, glm::vec3(0.4f, 6.0f, 0.4f));
-            firstPass.setMat4("model", netModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // middle post of net
-            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
-            firstPass.setMat4("model", netModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // left post of net
-            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
-            shadow.setMat4("model", netModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            glBindVertexArray(VAOs[5]);
-            // TERRAIN
-            // base of terrain
-
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -1.0f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.2f, 39.0f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // terrain lines
-            // vertical lines
-            // far left line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // not-as-far-left line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-12.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // middle line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 21.0f));
-            firstPass.setMat4("model", terrainModelMat);;
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // not-as-far-right line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(12.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // far right line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(18.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // horizontal lines
-            // top line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 39.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // upper middle line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 21.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // lower midde line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -21.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // bottom line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -39.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
-            firstPass.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        for (int miniController = 0; miniController < 2; miniController++)
-        {
-            baseModelMat = safeBaseModelMat;
-            // Craig
-            if (true)
-            {
-                
-                baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[miniController], racketposy[miniController], racketposz[miniController])); // translates entire model - rooted at origin
-                finalRacketModelMat[miniController] = baseModelMat;
-
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(larmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(larmrotz[miniController] - 315.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(uarmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(uarmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(uarmrotz[miniController] - 45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, 9.0f, 0.0f));
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                finalRacketModelMat[miniController] = glm::rotate(finalRacketModelMat[miniController], glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                finalRacketRotations[miniController] = glm::mat4(1.0f);
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(larmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(larmrotz[miniController] - 315.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(uarmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(uarmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(uarmrotz[miniController] - 45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                finalRacketRotations[miniController] = glm::rotate(finalRacketRotations[miniController], glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                //finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, -17.0f, 0.0f));
-                
-
-
-                // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
-                // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
-                // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
-
-                // scaling matrix - top of hierarchy
-                
-                baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[miniController], scaleFactor[miniController], scaleFactor[miniController])); // scales entire model
-                // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
-
-                //modelMatLowerArm = baseModelMat;
-                modelMatLowerArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
-                firstPass.setMat4("model", modelMatLowerArm);
-                //shader.setVec3("trueColor", glm::vec3(0.95f, 0.8f, 0.72f)); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
-
-                glBindVertexArray(VAOs[5]);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // translate the upper arm so that it sits just above the lower arm
-                baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
-                // rotations for the upper arm protion of the model - the racket reflects the same rotations
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
-
-                //modelMatUpperArm = baseModelMat;
-                modelMatUpperArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
-                firstPass.setMat4("model", modelMatUpperArm);
-
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-                // apply hierarchical rotations for the racket
-                baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 9.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
-                finalRacketModelMat[miniController] = baseModelMat;
-                finalRacketModelMat[miniController] = glm::translate(finalRacketModelMat[miniController], glm::vec3(0.0f, 4.0f, 0.0f));
-
-                // by doing one side of the racket and then the other, I can simply anchor the base of the next piece to the end of the last, simplifying some translation math
-                // 
-                // note how for every component, I translate, then rotate, then scale. 
-                // This allows me to easily anchor the base of the next component to the end of the last component. 
-                // It is a 'simple' translation because I only need to translate in the Y direction and the component will translate in the rotated Y, allowing it to align perfectly
-
-                // RACKET LEFT
-                // racket component 1 - bottom left
-                baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.5f, 1.0f));
-                //racketCompModelMat = glm::translate(racketCompModelMat, glm::vec3(0.0f, 0.0f, 0.0f));
-                //shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 2 - left wall
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.5f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.0f, 1.0f));
-                //shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 3 - left first top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.0f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.408f, 1.0f));
-                //shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 4 - left second top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 2.816f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.732f, 1.0f));
-                //shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-                // RACKET RIGHT
-                // racket component 5 - bottom right
-                baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.5f, 1.0f));
-                //racketCompModelMat = glm::translate(racketCompModelMat, glm::vec3(0.0f, 0.0f, 0.0f));
-                //shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 6 - right wall
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.5f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.0f, 1.0f));
-                //shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 7 - right first top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.0f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.408f, 1.0f));
-                //shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 8 - right second top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 2.816f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.732f, 1.0f));
-                //shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                firstPass.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                
-
-                // racket mesh
-                //shader.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.5f));
-
-                //vertical lines
-                vertMesh = glm::scale(baseModelMat, glm::vec3(0.1f, 5.0f, 0.1f));
-                vertMesh = glm::translate(vertMesh, glm::vec3(0.0f, 0.5f, 0.0f));
-                for (int i = 0; i < 9; i++)
-                {
-                    trueVertMesh = glm::translate(vertMesh, glm::vec3((i - 4.0f) * 10, 0.0f, 0.0f));
-                    firstPass.setMat4("model", trueVertMesh);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-
-                // horizontal lines
-                horiMesh = glm::translate(baseModelMat, glm::vec3(0.0f, 7.5f, 0.0f));
-                horiMesh = glm::scale(horiMesh, glm::vec3(4.5f, 0.1f, 0.1f));
-
-                for (int i = 0; i < 11; i++)
-                {
-                    trueHoriMesh = glm::translate(horiMesh, glm::vec3(0.0f, (i - 5.0f) * 10, 0.0f));
-                    firstPass.setMat4("model", trueHoriMesh);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-
-            }
-        }
-        
         //sphereModelMat = safeBaseModelMat;
         // Sphere
 
@@ -1294,590 +960,6 @@ int Assignment2(GLFWwindow* window)
         glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
 
         glBindVertexArray(VAOs[5]);
-
-        /*
-        baseModelMat = safeBaseModelMat;
-
-        // Sergio
-        if (true) {
-            //Colors declared for less pain to put them
-            auto racketRedColor = glm::vec3(0.529f, 0.086f, 0.078f);
-            auto racketGreyColor = glm::vec3(0.658f, 0.662f, 0.678f);
-            auto racketGreenColor = glm::vec3(0.313f, 0.784f, 0.470f);
-            auto skinColor = glm::vec3(0.945f, 0.760f, 0.490f);
-
-            glm::mat4 baseModel =
-                safeBaseModelMat *
-                glm::translate(glm::mat4(1.0f), glm::vec3(racketposx[1], racketposy[1], racketposz[1])) *
-                glm::scale(glm::mat4(1.0), glm::vec3(scaleFactor[1], scaleFactor[1], scaleFactor[1]));
-
-            // Limbs
-            glm::mat4 Limb = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-            // ARM
-            glm::mat4 tennisArm = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
-
-            firstPass.setMat4("model", tennisArm);
-            //shader.setVec3("actualColor", skinColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Hand
-
-            glm::mat4 HandLimb = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.1f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-            // ARM
-            glm::mat4 tennisHand = HandLimb *
-                glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
-
-
-            //shader.setMat4("model", tennisHand);
-            firstPass.setMat4("model", tennisHand);
-            //shader.setVec3("actualColor", skinColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Hand
-
-            glm::mat4 handRacketConnect = HandLimb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-            //changeTexture(rubberTexture);
-            // Tennis Racket
-            glm::mat4 tennisRacket = handRacketConnect * glm::translate(glm::mat4(1.0f), glm::vec3(0, 1.05f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-
-            // Tennis Racket Parts
-
-            glm::mat4 racketHandle = tennisRacket
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 1.75f / 2, 0.2f));
-
-            firstPass.setMat4("model", racketHandle);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, 4.0f, 3.0f));
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f));
-            firstPass.setMat4("model", tennisRacket);
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f));
-            tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, -3.0f, -3.0f));
-            glBindVertexArray(VAOs[5]);
-
-            //changeTexture(metalTexture);
-            // Left Side
-            glm::mat4 racketLeftSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 3.0f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
-
-            firstPass.setMat4("model", racketLeftSide);
-            //shader.setMat4("model", racketLeftSide);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Right Side
-
-            glm::mat4 racketRightSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-4.5f, 3.0f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
-
-            firstPass.setMat4("model", racketRightSide);
-            //shader.setMat4("model", racketRightSide);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Bottom Side
-            glm::mat4 racketBottomSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.15f / 2, 0.2f, 0.18f));
-
-
-            firstPass.setMat4("model", racketBottomSide);
-            //shader.setMat4("model", racketBottomSide);
-            //shader.setVec3("actualColor", racketRedColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Top Side
-            glm::mat4 racketTopSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 5.1f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.9f / 2, 0.2f, 0.2f));
-
-            firstPass.setMat4("model", racketTopSide);
-            //shader.setMat4("model", racketTopSide);
-            //shader.setVec3("actualColor", racketGreyColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Bottom Right Handle Parts
-            glm::mat4 racketBottomRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.6f, 2.00f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
-
-            firstPass.setMat4("model", racketBottomRightHandle);
-            //shader.setMat4("model", racketBottomRightHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Bottom Left Handle Parts
-            glm::mat4 racketBottomLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.6f, 2.0f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
-
-            firstPass.setMat4("model", racketBottomLeftHandle);
-            //shader.setMat4("model", racketBottomLeftHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.91, 4.72f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
-
-
-            firstPass.setMat4("model", racketTopRightHandle);
-            //shader.setMat4("model", racketTopRightHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.77f, 5.13f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
-
-            firstPass.setMat4("model", racketTopTopRightHandle);
-            //shader.setMat4("model", racketTopTopRightHandle);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.91, 4.72f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(-25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
-
-            firstPass.setMat4("model", racketTopLeftHandle);
-            //shader.setMat4("model", racketTopLeftHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.77f, 5.13f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(-65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
-
-            firstPass.setMat4("model", racketTopTopLeftHandle);
-            //shader.setMat4("model", racketTopTopLeftHandle);
-            //shader.setVec3("actualColor", racketRedColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Make Racket Grid
-
-            //changeTexture(greenTexture);
-
-            // Horizontal
-            for (int i = 0; i < 14; ++i) {
-                glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, (4.00f - (0.2 * (7 - i))), 0.0f))
-                    * glm::scale(glm::mat4(1.0f), glm::vec3(1.7f / 2, 0.05f, 0.05f));
-
-                firstPass.setMat4("model", racketGrid);
-                //shader.setMat4("model", racketGrid);
-                //shader.setVec3("actualColor", racketGreenColor);
-
-                //renderCube();
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
-
-
-            // Vertical
-            for (int i = 0; i < 7; ++i) {
-                glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3((0.0f - (0.2 * (3 - i))), (2.17f), 0.0f))
-                    * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 3.13f / 2, 0.05f));
-
-                firstPass.setMat4("model", racketGrid);
-                //shader.setMat4("model", racketGrid);
-                //shader.setVec3("actualColor", racketGreenColor);
-
-                //renderCube();
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
-
-        }
-
-        baseModelMat = safeBaseModelMat;
-
-        // Afaf
-        if (true) {
-            glBindVertexArray(afafVAO);
-
-            glm::mat4 shoulderPartMatrix1 = glm::translate(safeBaseModelMat, glm::vec3(modelPositionX + racketposx[2], modelPositionY + racketposy[2], modelPositionZ + racketposz[2]));
-            glm::mat4 shoulderPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(-16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[2]), glm::vec3(0.0, 1.0, 0.0));
-            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
-            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
-            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
-            glm::mat4 shoulderScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.03f + scaleFactor[2], 0.03f + scaleFactor[2], 0.035f));
-            glm::mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
-            modelHierarchyMatrix = shoulderMatrix;
-
-            firstPass.setMat4("model", modelHierarchyMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            glm::mat4 afafSphereMat = shoulderPartMatrix1 * rotationMatrix;
-            afafSphereMat = glm::translate(afafSphereMat, glm::vec3(0.0f, 8.0f, 5.0f));
-            afafSphereMat = glm::scale(afafSphereMat, glm::vec3(scaleFactor[2], scaleFactor[2], scaleFactor[2]));
-            firstPass.setMat4("model", afafSphereMat);
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-
-            glBindVertexArray(afafVAO);
-
-
-
-            // Lower arm (the lower arm appearing in window - not in reality) 
-            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.3f, 0.0f));
-            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 3.0f));
-            glm::mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
-
-            firstPass.setMat4("model", lowerArmWorld);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // elbow - the second join. The racket and upper arm are connected to it as well
-           // when I mean upper, I mean the upper arm appearing on the screen / window 
-            glm::mat4 elbowPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.01f, 2.8f, 0.0f));
-            glm::mat4 elbowPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glm::mat4 elbowXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
-            glm::mat4 elbowYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[2]), glm::vec3(0.0, 1.0, 0.0));
-            glm::mat4 elbowZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
-            glm::mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
-            glm::mat4 elbowScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
-            glm::mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
-
-            firstPass.setMat4("model", elbow);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper arm 
-            glm::mat4 upperArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.2f, 0.0f));
-            glm::mat4 upperScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 7.5f, 1.0f));
-            glm::mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
-            firstPass.setMat4("model", upperArm);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Handle 
-            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 12.0, 0.0f));
-            glm::mat4 handleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 9.5f, 0.3f));
-            glm::mat4 handleXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[2]), glm::vec3(1.0, 0.0, 0.0));
-            glm::mat4 handleYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[2]), glm::vec3(0.0, 1.0, 0.0));
-            glm::mat4 handleZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[2]), glm::vec3(0.0, 0.0, 1.0));
-            glm::mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
-            glm::mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale;
-            firstPass.setMat4("model", handleMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Racket net
-            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.95f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(9.5f, 1.0f, 0.1f));
-            glm::mat4 netMatrix = handleMatrix * NetPartMatrix;
-            firstPass.setMat4("model", netMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // right tube
-            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.95f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
-            glm::mat4 rightMatrix = handleMatrix * rightPartMatrix;
-            firstPass.setMat4("model", rightMatrix);
-            //   shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // left tube
-            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.95f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
-            glm::mat4 leftMatrix = handleMatrix * leftPartMatrix;
-            firstPass.setMat4("model", leftMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // make sure to unbind my cubeVAO
-
-        }
-
-        baseModelMat = safeBaseModelMat;
-        glm::mat4 kBaseModelMat = safeBaseModelMat;
-        // Kelly
-        if (true) {
-
-             //this is just here to be out of the way
-            //doesnt need to be initialised more than once
-            //float gUNIT = float(1) / float(100);
-            //float init_size = gUNIT * 2;
-            //based on this unit cube
-            float init_size = 2.0f;
-            //float model_size = init_size*scaleFactor[kpos];
-            float arm_size = 2 * init_size;
-
-            firstPass.setMat4("model", kBaseModelMat);
-
-            // unit cube - model building block
-           //glBindVertexArray(VAOs[5]); 
-           //this is the VAO im using for model
-
-            glBindVertexArray(VAOs[5]);
-
-            //draw model
-            //----------------------
-            //this is like a shoulder joint, and it moves the upper arm
-
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(racketposx[3], racketposy[3], racketposz[3]));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(larmrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
-            shoulderWorldMat = kBaseModelMat;
-            //glm::mat4 modelWorldMatrix= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
-
-            firstPass.setMat4("model", shoulderWorldMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            //draw upper arm
-            //use a transform matrix on the upper arm 
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0 , init_size , 0));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f, 1.0f));//twice as long
-            uarmWorldMatrix = kBaseModelMat;
-            firstPass.setMat4("model", uarmWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            //draw elbow
-            //use a transform matrix on the shoulder
-            kBaseModelMat = glm::translate((kBaseModelMat), glm::vec3(0,(arm_size/2), 0));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 0.5f, 1.0f));//doing it this way means i have to unscale, cant just take shoulder
-            elbowWorldMatrix = kBaseModelMat;
-            firstPass.setMat4("model", elbowWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            ////draw lower arm
-            //use a transform matrix on the elbow (to absorb its rotations)
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0, (init_size), 0));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f, 1.0f));
-            larmWorldMatrix = kBaseModelMat;
-            firstPass.setMat4("model", larmWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            //draw hand (wrist is for now the hand)
-            //use a transform matrix on the elbow
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0,(arm_size/2),  0));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
-            kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 0.5f, 1.0f));
-            wristWorldMatrix = kBaseModelMat;
-
-            firstPass.setMat4("model", wristWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            //draw racket
-            //transform wrist i kind of want it sticking through the hand so not translated all the way out
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(init_size / 4, init_size / 5, init_size / 4));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(2.5f, 0.50f, 0.50f));
-            //kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
-            racketWorldMatrix = kBaseModelMat;
-            firstPass.setMat4("model", racketWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f + racketWorldMatrix[3][0], 4.0f + racketWorldMatrix[3][1], 3.0f + racketWorldMatrix[3][2]));
-            baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
-            firstPass.setMat4("model", baseModelMat);
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            glBindVertexArray(VAOs[5]);
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-
-            //turn it from a sad sticck into a bat at least
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0.85* init_size,-0.25*init_size,0));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f,2.0f ));
-            //kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
-            batWorldMatrix = kBaseModelMat;
-            firstPass.setMat4("model", batWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        }
-
-        baseModelMat = safeBaseModelMat;
-
-        // Jordan
-        if (true) {
-            glm::mat4 armPosition = glm::translate(safeBaseModelMat, glm::vec3(racketposx[4], racketposy[4], racketposz[4]));
-            glm::mat4 centerUnitCube = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-
-            // Lower arm world matrix
-            glm::mat4 lowerArmScale = glm::scale(glm::mat4(1.0f), scaleFactor[4] * glm::vec3(5.0f, 0.5f, 0.5f));
-
-            glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[4]), glm::vec3(1.0f, 0.0f, 0.0f));
-            glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[4]), glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[4]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            glm::mat4 lowerArmRotate = xRotation * yRotation * zRotation;
-            glm::mat4 lowerArmMatrix = armPosition * lowerArmRotate * lowerArmScale;
-            firstPass.setMat4("model", lowerArmMatrix * centerUnitCube);
-
-            // Lower arm color
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Upper arm world matrix
-            glm::mat4 upperArmOffset = glm::translate(glm::mat4(1.0f), glm::vec3(0.475f, 0.0f, 0.0f)); // Racket needs to be translated before rotation
-
-            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[4]), glm::vec3(1.0f, 0.0f, 0.0f));
-            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[4]), glm::vec3(0.0f, 1.0f, 0.0f));
-            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[4]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            glm::mat4 upperArmRotate = xRotation * yRotation * zRotation;
-
-            glm::vec3 upperArmTranslateVector = lowerArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f); // Calculate translation of joint
-            glm::mat4 upperArmTranslateMatrix = glm::translate(glm::mat4(1.0f), upperArmTranslateVector);
-
-            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * baseModelMat * lowerArmRotate * upperArmRotate
-                * lowerArmScale * upperArmOffset;
-
-            firstPass.setMat4("model", upperArmMatrix * centerUnitCube);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Racket handle world matrix
-            glm::mat4 racketScale(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 0.5f))); // Relative to upper arm
-            glm::mat4 racketOffset(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f))); // Racket needs to be translated before rotation
-
-            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[4]), glm::vec3(1.0f, 0.0f, 0.0f));
-            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[4]), glm::vec3(0.0f, 1.0f, 0.0f));
-            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[4]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            glm::mat4 racketRotate = xRotation * yRotation * zRotation;
-
-            glm::vec3 racketTranslateVector(upperArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f)); // Calculate translation of hand position
-            glm::mat4 racketTranslateMatrix(glm::translate(glm::mat4(1.0f), racketTranslateVector));
-
-            glm::mat4 racketMatrix = racketTranslateMatrix * baseModelMat * racketRotate * upperArmRotate * lowerArmRotate
-                * lowerArmScale * racketScale * racketOffset;
-            firstPass.setMat4("model", racketMatrix * centerUnitCube);
-
-            // Racket handle color
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Racket paddle world matrix
-            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.75f, 15.0f, 0.25f)); // Relative to handle
-            glm::mat4 paddleTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-            glm::mat4 paddleMatrix = racketMatrix * paddleTranslate * paddleScale;
-            firstPass.setMat4("model", paddleMatrix * centerUnitCube);
-
-            // Racket paddle color
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-
-            // Texture
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            glm::mat4 ballScale = glm::inverse(lowerArmScale * racketScale * paddleScale);
-            glm::mat4 ballTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
-            glm::mat4 ballWorldMatrix = paddleMatrix * ballScale * ballTranslate;
-;
-            firstPass.setMat4("model", ballWorldMatrix);
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-        }
-
-        */
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // reset viewport
@@ -1905,364 +987,41 @@ int Assignment2(GLFWwindow* window)
 
         // render second passes
         // lighting, gridlines, coordinate markers, terrain
-        if (true)
-        {
-            baseModelMat = glm::mat4(1.0f);
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationx), glm::vec3(1.0f, 0.0f, 0.0f)); // rotate on true X
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationy), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate on current Y -> I'll look into this more later, but I wasn't able to find a way to make the third rotation be on the true axis, so I decided Y should rotate on current
-            baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationz), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate on true Z
+        baseModelMat = glm::mat4(1.0f);
+        baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationx), glm::vec3(1.0f, 0.0f, 0.0f)); // rotate on true X
+        baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationy), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate on current Y -> I'll look into this more later, but I wasn't able to find a way to make the third rotation be on the true axis, so I decided Y should rotate on current
+        baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationz), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate on true Z
 
 
 
-            // set the light source to 30 units 'up', whatever that up may be relative to the world orientation
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(0.1f, 25.0f, 5.0f));
-            lightPos.x = baseModelMat[3][0];
-            lightPos.y = baseModelMat[3][1];
-            lightPos.z = baseModelMat[3][2];
-            // light settings for the shader
-            shadow.setVec3("lightPos", lightPos);
-            shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        // set the light source to 30 units 'up', whatever that up may be relative to the world orientation
+        baseModelMat = glm::translate(baseModelMat, glm::vec3(0.1f, 25.0f, 5.0f));
+        lightPos.x = baseModelMat[3][0];
+        lightPos.y = baseModelMat[3][1];
+        lightPos.z = baseModelMat[3][2];
+        // light settings for the shader
+        shadow.setVec3("lightPos", lightPos);
+        shadow.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-            // light source
-            glBindVertexArray(VAOs[5]);
+        // light source
+        glBindVertexArray(VAOs[5]);
 
-            //visual representation of the light source location
-            shadow.setMat4("model", baseModelMat);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
-            shadow.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            //glDrawArrays(GL_TRIANGLES, 0, 36);
+        //visual representation of the light source location
+        shadow.setMat4("model", baseModelMat);
+        shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
+        shadow.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            baseModelMat = glm::translate(baseModelMat, glm::vec3(-0.1f, -25.0f, -5.0f));
-
-
-
-            //shader.use();
-
-            shadow.setMat4("model", baseModelMat);
-
-            // x coord marker
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f)); // set color for x coord marker
-            glBindVertexArray(VAOs[5]);
-            axisModel = glm::translate(baseModelMat, glm::vec3(5.0f, 0.0f, 0.0f));
-            axisModel = glm::scale(axisModel, glm::vec3(5.0f, 0.5f, 0.5f));
-            shadow.setMat4("model", axisModel);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // z coord marker
-            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.0f, 1.0f)); // set color for z coord marker
-            glBindVertexArray(VAOs[5]);
-            axisModel = glm::translate(baseModelMat, glm::vec3(0.0f, 0.0f, 5.0f));
-            axisModel = glm::scale(axisModel, glm::vec3(0.5f, 0.5f, 5.0f));
-            shadow.setMat4("model", axisModel);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // y coord marker
-            shadow.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.0f)); // set color for y coord marker
-            glBindVertexArray(VAOs[5]);
-            axisModel = glm::scale(baseModelMat, glm::vec3(0.5f, 5.0f, 0.5f));
-            shadow.setMat4("model", axisModel);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.8f, 0.0f)); // set color for gridlines
-
-            // x gridlines
-            glBindVertexArray(VAOs[0]);
-            for (int i = 0; i < 101; i++)
-            {
-                // there is just a single line. It is drawn multiple times in different places by manipulating a custom model matrix for the gridlines
-                modelx = glm::translate(baseModelMat, glm::vec3(0, 0, -50.0f + i));
-                shadow.setMat4("model", modelx);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-            // z gridlines
-            glBindVertexArray(VAOs[1]);
-            for (int i = 0; i < 101; i++)
-            {
-                // same as x gridlines
-                modelz = glm::translate(baseModelMat, glm::vec3(-50.0f + i, 0, 0));
-                shadow.setMat4("model", modelz);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-            // NET
-            // net (using the X gridlines for the horizontal portion of the net)
-            glBindVertexArray(VAOs[0]);
-            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.15f, 0.0f)); // set color for net
-            for (int i = 0; i < 16; i++)
-            {
-                // same as x gridlines
-                modelx = glm::translate(baseModelMat, glm::vec3(0.0f, 2.0f + i / 2, 0));
-                shadow.setMat4("model", modelx);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-            // vertical net bits
-            glBindVertexArray(VAOs[3]);
-            for (int i = 0; i < 37; i++)
-            {
-                // same as x gridlines
-                netModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f + i, 0, 0));
-                shadow.setMat4("model", netModelMat);
-
-                glDrawArrays(GL_LINES, 0, 2);
-            }
-
-            // texture for net posts
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, triColor);
-            }
-            // top part of the net
-            glBindVertexArray(VAOs[4]);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for net railing
-            modelx = glm::scale(modelx, glm::vec3(18.0f, 0.5f, 0.2f));
-            shadow.setMat4("model", modelx);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // right post of net
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for net posts
-            netModelMat = glm::scale(netModelMat, glm::vec3(0.4f, 6.0f, 0.4f));
-            shadow.setMat4("model", netModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // middle post of net
-            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
-            shadow.setMat4("model", netModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // left post of net
-            netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
-            shadow.setMat4("model", netModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, clay);
-            }
-
-            glBindVertexArray(VAOs[5]);
-            // TERRAIN
-            // base of terrain
-            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.52f, 0.4f)); // set color for terrain base
-
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -1.0f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.2f, 39.0f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // terrain lines
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for terrain lines
-            // vertical lines
-            // far left line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // not-as-far-left line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(-12.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // middle line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 21.0f));
-            shadow.setMat4("model", terrainModelMat);;
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // not-as-far-right line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(12.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // far right line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(18.0f, -0.5f, 0.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // horizontal lines
-            // top line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 39.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // upper middle line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 21.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // lower midde line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -21.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // bottom line
-            terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -39.0f));
-            terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
-            shadow.setMat4("model", terrainModelMat);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            glBindTexture(GL_TEXTURE_2D, white);
-        }
-
-        for (int miniController = 0; miniController < 2; miniController++)
-        {
-            baseModelMat = safeBaseModelMat;
-            // Craig
-            if (true)
-            {
-                //shader.use();
-
-                // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
-                // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
-                // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
-
-                // scaling matrix - top of hierarchy
-                baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[miniController], racketposy[miniController], racketposz[miniController])); // translates entire model - rooted at origin
-                baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[miniController], scaleFactor[miniController], scaleFactor[miniController])); // scales entire model
-                // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
-
-                //modelMatLowerArm = baseModelMat;
-                modelMatLowerArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
-                shadow.setMat4("model", modelMatLowerArm);
-                shadow.setVec3("trueColor", glm::vec3(0.95f, 0.8f, 0.72f)); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
-
-                glBindVertexArray(VAOs[5]);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // translate the upper arm so that it sits just above the lower arm
-                baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
-                // rotations for the upper arm protion of the model - the racket reflects the same rotations
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
-
-                //modelMatUpperArm = baseModelMat;
-                modelMatUpperArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
-                shadow.setMat4("model", modelMatUpperArm);
-
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-                // apply hierarchical rotations for the racket
-                baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 9.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
-                baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-                
-
-                // by doing one side of the racket and then the other, I can simply anchor the base of the next piece to the end of the last, simplifying some translation math
-                // 
-                // note how for every component, I translate, then scale, then rotate. 
-                // This allows me to easily anchor the base of the next component to the end of the last component. 
-                // It is a 'simple' translation because I only need to translate in the Y direction and the component will translate in the rotated Y, allowing it to align perfectly
-
-                if (textureToggle)
-                {
-                    glBindTexture(GL_TEXTURE_2D, glossy);
-                }
-                // RACKET LEFT
-                // racket component 1 - bottom left
-                baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.5f, 1.0f));
-                //racketCompModelMat = glm::translate(racketCompModelMat, glm::vec3(0.0f, 0.0f, 0.0f));
-                shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 2 - left wall
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.5f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.0f, 1.0f));
-                shadow.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 3 - left first top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.0f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.408f, 1.0f));
-                shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 4 - left second top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 2.816f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.732f, 1.0f));
-                shadow.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
+        baseModelMat = glm::translate(baseModelMat, glm::vec3(-0.1f, -25.0f, -5.0f));
 
 
 
-                // RACKET RIGHT
-                // racket component 5 - bottom right
-                baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.5f, 1.0f));
-                //racketCompModelMat = glm::translate(racketCompModelMat, glm::vec3(0.0f, 0.0f, 0.0f));
-                shadow.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
+        //shader.use();
 
-                // racket component 6 - right wall
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.5f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.0f, 1.0f));
-                shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
+        shadow.setMat4("model", baseModelMat);
 
-                // racket component 7 - right first top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.0f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.408f, 1.0f));
-                shadow.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // racket component 8 - right second top
-                baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 2.816f, 0.0f));
-                baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.732f, 1.0f));
-                shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-                shadow.setMat4("model", racketCompModelMat);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-                // racket mesh
-                shadow.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.5f));
-
-                //vertical lines
-                vertMesh = glm::scale(baseModelMat, glm::vec3(0.1f, 5.0f, 0.1f));
-                vertMesh = glm::translate(vertMesh, glm::vec3(0.0f, 0.5f, 0.0f));
-                for (int i = 0; i < 9; i++)
-                {
-                    trueVertMesh = glm::translate(vertMesh, glm::vec3((i - 4.0f) * 10, 0.0f, 0.0f));
-                    shadow.setMat4("model", trueVertMesh);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-
-                // horizontal lines
-                horiMesh = glm::translate(baseModelMat, glm::vec3(0.0f, 7.5f, 0.0f));
-                horiMesh = glm::scale(horiMesh, glm::vec3(4.5f, 0.1f, 0.1f));
-
-                for (int i = 0; i < 11; i++)
-                {
-                    trueHoriMesh = glm::translate(horiMesh, glm::vec3(0.0f, (i - 5.0f) * 10, 0.0f));
-                    shadow.setMat4("model", trueHoriMesh);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-
-            }
-
-        }
-
+        renderScene(shadow, baseModelMat, VAOs);
+       
         /*
         if (sphereDir)
             sphereModelMat = glm::translate(sphereModelMat, glm::vec3(0.0f, 0.0f, 0.1f));
@@ -2292,590 +1051,6 @@ int Assignment2(GLFWwindow* window)
         baseModelMat = safeBaseModelMat;
         glBindTexture(GL_TEXTURE_2D, white);
 
-        /*
-        // Sergio
-        if (true) {
-            //Colors declared for less pain to put them
-            auto racketRedColor = glm::vec3(0.529f, 0.086f, 0.078f);
-            auto racketGreyColor = glm::vec3(0.658f, 0.662f, 0.678f);
-            auto racketGreenColor = glm::vec3(0.313f, 0.784f, 0.470f);
-            auto skinColor = glm::vec3(0.945f, 0.760f, 0.490f);
-
-            glm::mat4 baseModel =
-                baseModelMat *
-                glm::translate(glm::mat4(1.0f), glm::vec3(racketposx[1], racketposy[1], racketposz[1])) *
-                glm::scale(glm::mat4(1.0), glm::vec3(scaleFactor[1], scaleFactor[1], scaleFactor[1]));
-
-            // Limbs
-            glm::mat4 Limb = baseModel * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-            // ARM
-            glm::mat4 tennisArm = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
-
-            shadow.setMat4("model", tennisArm);
-            shadow.setVec3("trueColor", skinColor);
-            //shader.setVec3("actualColor", skinColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Hand
-
-            glm::mat4 HandLimb = Limb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.1, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-            // ARM
-            glm::mat4 tennisHand = HandLimb *
-                glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(0.4f, 2.5f / 2, 0.4f));
-
-
-            //shader.setMat4("model", tennisHand);
-            shadow.setMat4("model", tennisHand);
-            shadow.setVec3("trueColor", skinColor);
-            //shader.setVec3("actualColor", skinColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Hand
-
-            glm::mat4 handRacketConnect = HandLimb * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[1]), glm::vec3(1.0f, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[1]), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[1]), glm::vec3(0.0f, 0.0f, 1.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-            //changeTexture(rubberTexture);
-            // Tennis Racket
-            glm::mat4 tennisRacket = handRacketConnect * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0f, 0.0f)) *
-                glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
-                glm::scale(glm::mat4(1.0), glm::vec3(1.0f, 1.0, 1.0f));
-
-
-            // Tennis Racket Parts
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-
-            glm::mat4 racketHandle = tennisRacket
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 1.75f / 2, 0.2f));
-
-            shadow.setMat4("model", racketHandle);
-            shadow.setVec3("trueColor", racketRedColor);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, 4.0f, 3.0f));
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f, scaleFactor[1] * 0.25f));
-            shadow.setMat4("model", tennisRacket);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            tennisRacket = glm::scale(tennisRacket, glm::vec3(pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f, pow(scaleFactor[1], -1) * 4.0f));
-            tennisRacket = glm::translate(tennisRacket, glm::vec3(0.0f, -4.0f, -3.0f));
-            glBindVertexArray(VAOs[5]);
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-
-            //changeTexture(metalTexture);
-            // Left Side
-            glm::mat4 racketLeftSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 3.0f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
-
-            shadow.setMat4("model", racketLeftSide);
-            shadow.setVec3("trueColor", racketRedColor);
-            //shader.setMat4("model", racketLeftSide);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Right Side
-
-            glm::mat4 racketRightSide = racketHandle
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-4.5f, 3.0f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.25f, 1.0f));
-
-            shadow.setMat4("model", racketRightSide);
-            shadow.setVec3("trueColor", racketRedColor);
-            //shader.setMat4("model", racketRightSide);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Bottom Side
-            glm::mat4 racketBottomSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 2.0f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.15f / 2, 0.2f, 0.18f));
-
-
-            shadow.setMat4("model", racketBottomSide);
-            shadow.setVec3("trueColor", racketRedColor);
-            //shader.setMat4("model", racketBottomSide);
-            //shader.setVec3("actualColor", racketRedColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Top Side
-            glm::mat4 racketTopSide = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0, 5.1f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.9f / 2, 0.2f, 0.2f));
-
-            shadow.setMat4("model", racketTopSide);
-            shadow.setVec3("trueColor", racketGreyColor);
-            //shader.setMat4("model", racketTopSide);
-            //shader.setVec3("actualColor", racketGreyColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Bottom Right Handle Parts
-            glm::mat4 racketBottomRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.6f, 2.00f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
-
-            shadow.setMat4("model", racketBottomRightHandle);
-            shadow.setVec3("trueColor", racketGreyColor);
-            //shader.setMat4("model", racketBottomRightHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Bottom Left Handle Parts
-            glm::mat4 racketBottomLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.6f, 2.0f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(-55.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(1.55f / 2, 0.2f, 0.2f));
-
-            shadow.setMat4("model", racketBottomLeftHandle);
-            shadow.setVec3("trueColor", racketGreyColor);
-            //shader.setMat4("model", racketBottomLeftHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.91, 4.72f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
-
-
-            shadow.setMat4("model", racketTopRightHandle);
-            shadow.setVec3("trueColor", racketGreyColor);
-            //shader.setMat4("model", racketTopRightHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopTopRightHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.77f, 5.13f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
-
-            shadow.setMat4("model", racketTopTopRightHandle);
-            shadow.setVec3("trueColor", racketRedColor);
-            //shader.setMat4("model", racketTopTopRightHandle);
-            //shader.setVec3("actualColor", racketRedColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.91, 4.72f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(-25.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.55f / 2, 0.2f));
-
-            shadow.setMat4("model", racketTopLeftHandle);
-            shadow.setVec3("trueColor", racketGreyColor);
-            //shader.setMat4("model", racketTopLeftHandle);
-            //shader.setVec3("actualColor", racketGreyColor);
-
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // Top Right Handle Parts
-            glm::mat4 racketTopTopLeftHandle = tennisRacket
-                * glm::translate(glm::mat4(1.0f), glm::vec3(-0.77f, 5.13f, 0.0f))
-                * glm::rotate(glm::mat4(1.0f), glm::radians(-65.0f), glm::vec3(0.0f, 0.0f, 1.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.20f, 0.45f / 2, 0.2f));
-
-            shadow.setMat4("model", racketTopTopLeftHandle);
-            shadow.setVec3("trueColor", racketRedColor);
-            //shader.setMat4("model", racketTopTopLeftHandle);
-            //shader.setVec3("actualColor", racketRedColor);
-            //renderCube();
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Make Racket Grid
-
-            //changeTexture(greenTexture);
-
-            // Horizontal
-            for (int i = 0; i < 14; ++i) {
-                glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, (4.00f - (0.2 * (7 - i))), 0.0f))
-                    * glm::scale(glm::mat4(1.0f), glm::vec3(1.7f / 2, 0.05f, 0.05f));
-
-                shadow.setMat4("model", racketGrid);
-                shadow.setVec3("trueColor", racketGreenColor);
-                //shader.setMat4("model", racketGrid);
-                //shader.setVec3("actualColor", racketGreenColor);
-
-                //renderCube();
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
-
-
-            // Vertical
-            for (int i = 0; i < 7; ++i) {
-                glm::mat4 racketGrid = tennisRacket
-                    * glm::translate(glm::mat4(1.0f), glm::vec3((0.0f - (0.2 * (3 - i))), (2.17f), 0.0f))
-                    * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 3.13f / 2, 0.05f));
-
-                shadow.setMat4("model", racketGrid);
-                shadow.setVec3("trueColor", racketGreenColor);
-                //shader.setMat4("model", racketGrid);
-                //shader.setVec3("actualColor", racketGreenColor);
-
-                //renderCube();
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
-
-        }
-
-        baseModelMat = safeBaseModelMat;
-        glBindTexture(GL_TEXTURE_2D, white);
-
-        // Afaf 
-        if (true) {
-            glBindVertexArray(afafVAO);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.84f, 0.7f));
-
-            glm::mat4 shoulderPartMatrix1 = glm::translate(safeBaseModelMat, glm::vec3(modelPositionX + racketposx[2], modelPositionY + racketposy[2], modelPositionZ + racketposz[2]));
-            glm::mat4 shoulderPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(-16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glm::mat4 yrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[2]), glm::vec3(0.0, 1.0, 0.0));
-            glm::mat4 zrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
-            glm::mat4 xrotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
-            glm::mat4 rotationMatrix = xrotationMatrix * yrotationMatrix * zrotationMatrix * shoulderPartMatrix2;
-            glm::mat4 shoulderScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.03f + scaleFactor[2], 0.03f + scaleFactor[2], 0.035f));
-            glm::mat4 shoulderMatrix = shoulderPartMatrix1 * rotationMatrix * shoulderScale;
-            modelHierarchyMatrix = shoulderMatrix;
-
-            glm::mat4 afafSphereMat = shoulderPartMatrix1 * rotationMatrix;
-            shadow.setMat4("model", shoulderPartMatrix1);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            afafSphereMat = glm::translate(afafSphereMat, glm::vec3(0.0f, 8.0f, 5.0f));
-            afafSphereMat = glm::scale(afafSphereMat, glm::vec3(scaleFactor[2], scaleFactor[2], scaleFactor[2]));
-            shadow.setMat4("model", afafSphereMat);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-
-            glBindVertexArray(afafVAO);
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, white);
-            }
-
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.84f, 0.7f));
-            // Lower arm (the lower arm appearing in window - not in reality) 
-            glm::mat4 lowerArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.3f, 0.0f));
-            glm::mat4 lowerScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.5f, 3.0f));
-            glm::mat4 lowerArmWorld = modelHierarchyMatrix * lowerArmPartMatrix * lowerScale;
-
-            shadow.setMat4("model", lowerArmWorld);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // elbow - the second join. The racket and upper arm are connected to it as well
-           // when I mean upper, I mean the upper arm appearing on the screen / window 
-            glm::mat4 elbowPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.01f, 2.8f, 0.0f));
-            glm::mat4 elbowPartMatrix2 = glm::rotate(glm::mat4(1.0f), glm::radians(16.18f), glm::vec3(0.0f, 0.0f, 1.0f));
-            glm::mat4 elbowXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[2]), glm::vec3(1.0, 0.0, 0.0));
-            glm::mat4 elbowYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[2]), glm::vec3(0.0, 1.0, 0.0));
-            glm::mat4 elbowZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[2]), glm::vec3(0.0, 0.0, 1.0));
-            glm::mat4 elbowRotation = elbowXRotation * elbowYRotation * elbowZRotation * elbowPartMatrix2;
-            glm::mat4 elbowScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
-            glm::mat4 elbow = modelHierarchyMatrix * elbowPartMatrix * elbowRotation * elbowScale;
-
-            shadow.setMat4("model", elbow);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // upper arm 
-            glm::mat4 upperArmPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 4.2f, 0.0f));
-            glm::mat4 upperScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 7.5f, 1.0f));
-            glm::mat4 upperArm = elbow * upperArmPartMatrix * upperScale;
-            shadow.setMat4("model", upperArm);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-
-            // Handle 
-            glm::mat4 handlePartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 12.0, 0.0f));
-            glm::mat4 handleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 9.5f, 0.3f));
-            glm::mat4 handleXRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[2]), glm::vec3(1.0, 0.0, 0.0));
-            glm::mat4 handleYRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[2]), glm::vec3(0.0, 1.0, 0.0));
-            glm::mat4 handleZRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[2]), glm::vec3(0.0, 0.0, 1.0));
-            glm::mat4 handleRotation = handleXRotation * handleYRotation * handleZRotation;
-            glm::mat4 handleMatrix = elbow * handlePartMatrix * handleRotation * handleScale;
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f));
-            shadow.setMat4("model", handleMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
-            // Racket net
-            glm::mat4 NetPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.95f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(9.5f, 1.0f, 0.1f));
-            glm::mat4 netMatrix = handleMatrix * NetPartMatrix;
-            shadow.setMat4("model", netMatrix);
-            shadow.setVec3("trueColor", glm::vec3(0.0f, 0.5f, 0.3f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // right tube
-            glm::mat4 rightPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.6f, 0.95f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
-            glm::mat4 rightMatrix = handleMatrix * rightPartMatrix;
-            shadow.setMat4("model", rightMatrix);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-            // left tube
-            glm::mat4 leftPartMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.6f, 0.95f, 0.0f))
-                * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.3f));
-            glm::mat4 leftMatrix = handleMatrix * leftPartMatrix;
-            shadow.setMat4("model", leftMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            // make sure to unbind my cubeVAO
-
-        }
-
-        baseModelMat = safeBaseModelMat;
-        glBindTexture(GL_TEXTURE_2D, white);
-
-        //Kelly
-        if (true) {
-              //colours
-            glm::vec3 MIAMI_PINK = glm::vec3(1.0f, 0.40f, 1.0f);
-            glm::vec3 MIAMI_BLUE = glm::vec3(0.5f, 1.0f, 1.0f);
-            glm::vec3 WHITE_VEC3 = glm::vec3(1.0f, 1.0f, 1.0f);
-            glm::vec3 YELLOW = glm::vec3(1.0f, 1.0f, 0.0f);
-
-            glm::vec3 PURP = glm::vec3(0.58, 0.50, 1.00);
-            //-----------------------------------
-
-            glBindVertexArray(VAOs[5]);
-            //shader.use();
-            shadow.setMat4("model", shoulderWorldMat);
-            shadow.setVec3("trueColor", WHITE_VEC3); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            shadow.setMat4("model", uarmWorldMatrix);
-            shadow.setVec3("trueColor", PURP); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            shadow.setMat4("model", elbowWorldMatrix);
-            shadow.setVec3("trueColor", WHITE_VEC3);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            shadow.setMat4("model", larmWorldMatrix);
-            shadow.setVec3("trueColor", PURP);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-            shadow.setVec3("trueColor", PURP);
-            shadow.setMat4("model", wristWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-
-            shadow.setVec3("trueColor", MIAMI_PINK);
-            shadow.setMat4("model", racketWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            shoulderWorldMat = glm::translate(shoulderWorldMat, glm::vec3(0.0f, 4.0f, 3.0f));
-            shoulderWorldMat = glm::scale(shoulderWorldMat, glm::vec3(scaleFactor[3], scaleFactor[3], scaleFactor[3]));
-            shadow.setMat4("model", shoulderWorldMat);
-            shadow.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-            // Texture
-            // TODO: apply texture on tennis ball
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-            glBindVertexArray(VAOs[5]);
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-
-            shadow.setMat4("model", batWorldMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        }
-
-        baseModelMat = safeBaseModelMat;
-        glBindTexture(GL_TEXTURE_2D, white);
-
-        // Jordan
-        if (true) {
-            glm::mat4 armPosition = glm::translate(safeBaseModelMat, glm::vec3(racketposx[4], racketposy[4], racketposz[4]));
-            glm::mat4 centerUnitCube = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f))
-                * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, glossy);
-            }
-            
-            // Lower arm world matrix
-            glm::mat4 lowerArmScale = glm::scale(glm::mat4(1.0f), scaleFactor[4] * glm::vec3(5.0f, 0.5f, 0.5f));
-
-            glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotx[4]), glm::vec3(1.0f, 0.0f, 0.0f));
-            glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmroty[4]), glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(larmrotz[4]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            glm::mat4 lowerArmRotate = xRotation * yRotation * zRotation;
-            glm::mat4 lowerArmMatrix = armPosition * lowerArmRotate * lowerArmScale;
-            shadow.setMat4("model", lowerArmMatrix * centerUnitCube);
-
-            // Lower arm color
-            glm::vec3 armColor = glm::vec3(0.443f, 0.255f, 0.216f);
-            shadow.setVec3("trueColor", armColor);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Upper arm world matrix
-            glm::mat4 upperArmOffset = glm::translate(glm::mat4(1.0f), glm::vec3(0.475f, 0.0f, 0.0f)); // Racket needs to be translated before rotation
-
-            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotx[4]), glm::vec3(1.0f, 0.0f, 0.0f));
-            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmroty[4]), glm::vec3(0.0f, 1.0f, 0.0f));
-            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(uarmrotz[4]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            glm::mat4 upperArmRotate = xRotation * yRotation * zRotation;
-
-            glm::vec3 upperArmTranslateVector = lowerArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f); // Calculate translation of joint
-            glm::mat4 upperArmTranslateMatrix = glm::translate(glm::mat4(1.0f), upperArmTranslateVector);
-
-            glm::mat4 upperArmMatrix = upperArmTranslateMatrix * baseModelMat * lowerArmRotate * upperArmRotate
-                * lowerArmScale * upperArmOffset;
-
-            shadow.setMat4("model", upperArmMatrix * centerUnitCube);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Racket handle world matrix
-            glm::mat4 racketScale(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 0.5f))); // Relative to upper arm
-            glm::mat4 racketOffset(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f))); // Racket needs to be translated before rotation
-
-            xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotx[4]), glm::vec3(1.0f, 0.0f, 0.0f));
-            yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketroty[4]), glm::vec3(0.0f, 1.0f, 0.0f));
-            zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(racketrotz[4]), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            glm::mat4 racketRotate = xRotation * yRotation * zRotation;
-
-            glm::vec3 racketTranslateVector(upperArmMatrix * glm::vec4(0.5f, 0.0f, 0.0f, 1.0f)); // Calculate translation of hand position
-            glm::mat4 racketTranslateMatrix(glm::translate(glm::mat4(1.0f), racketTranslateVector));
-
-            glm::mat4 racketMatrix = racketTranslateMatrix * baseModelMat * racketRotate * upperArmRotate * lowerArmRotate
-                * lowerArmScale * racketScale * racketOffset;
-            shadow.setMat4("model", racketMatrix * centerUnitCube);
-
-            // Racket handle color
-            glm::vec3 handleColor = glm::vec3(0.878f, 0.69f, 1.0f);
-            shadow.setVec3("trueColor", handleColor);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Racket paddle world matrix
-            glm::mat4 paddleScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.75f, 15.0f, 0.25f)); // Relative to handle
-            glm::mat4 paddleTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-            glm::mat4 paddleMatrix = racketMatrix * paddleTranslate * paddleScale;
-            shadow.setMat4("model", paddleMatrix * centerUnitCube);
-
-            // Racket paddle color
-            glm::vec3 paddleColor = glm::vec3(0.722f, 0.286f, 1.0f);
-            shadow.setVec3("trueColor", paddleColor);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-
-            // Sphere
-            // Sphere VAO, VBO and EBO
-            glBindVertexArray(sphere.VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, sphere.VBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere.EBO);
-
-            // Texture
-            if (textureToggle)
-            {
-                glBindTexture(GL_TEXTURE_2D, tennisBall);
-            }
-
-            glm::mat4 ballScale = glm::inverse(lowerArmScale * racketScale * paddleScale);
-            glm::mat4 ballTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
-            glm::mat4 ballWorldMatrix = paddleMatrix * ballScale * ballTranslate;
-
-            shadow.setVec3("trueColor", glm::vec3(1.0f));
-            shadow.setMat4("model", ballWorldMatrix);
-            glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
-        }
-
-        */
         // check and call events (poll IO) and swap the buffers
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -3482,6 +1657,357 @@ unsigned int loadTexture(char const* path)
     return textureID;
 }
 
+void renderScene(Shader shader, glm::mat4 baseModelMat, unsigned int VAOs[6]) {
+
+
+
+    //glm::mat4 safeBaseModelMat = glm::mat4(1.0f);
+
+    renderGrid(shader, baseModelMat, VAOs);
+    for (size_t i = 0; i < 2; i++)
+    {
+        renderRacket(shader, baseModelMat, VAOs, i);
+    }
+    
+
+}
+
+void renderGrid(Shader shader, glm::mat4 baseModelMat, unsigned int VAOs[6]) {
+
+    shader.setMat4("model", baseModelMat);
+
+    glm::mat4 modelx = glm::mat4(1.0f);
+    glm::mat4 modelz = glm::mat4(1.0f);
+    glm::mat4 axisModel = glm::mat4(1.0f);
+    glm::mat4 netModelMat = glm::mat4(1.0f);
+    glm::mat4 terrainModelMat = glm::mat4(1.0f);
+
+    shader.setMat4("model", baseModelMat);
+
+    // x coord marker
+    shader.setVec3("trueColor", glm::vec3(1.0f, 0.0f, 0.0f)); // set color for x coord marker
+    glBindVertexArray(VAOs[5]);
+    axisModel = glm::translate(baseModelMat, glm::vec3(5.0f, 0.0f, 0.0f));
+    axisModel = glm::scale(axisModel, glm::vec3(5.0f, 0.5f, 0.5f));
+    shader.setMat4("model", axisModel);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // z coord marker
+    shader.setVec3("trueColor", glm::vec3(0.0f, 0.0f, 1.0f)); // set color for z coord marker
+    glBindVertexArray(VAOs[5]);
+    axisModel = glm::translate(baseModelMat, glm::vec3(0.0f, 0.0f, 5.0f));
+    axisModel = glm::scale(axisModel, glm::vec3(0.5f, 0.5f, 5.0f));
+    shader.setMat4("model", axisModel);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // y coord marker
+    shader.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.0f)); // set color for y coord marker
+    glBindVertexArray(VAOs[5]);
+    axisModel = glm::scale(baseModelMat, glm::vec3(0.5f, 5.0f, 0.5f));
+    shader.setMat4("model", axisModel);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    shader.setVec3("trueColor", glm::vec3(0.0f, 0.8f, 0.0f)); // set color for gridlines
+
+    // x gridlines
+    glBindVertexArray(VAOs[0]);
+    for (int i = 0; i < 101; i++)
+    {
+        // there is just a single line. It is drawn multiple times in different places by manipulating a custom model matrix for the gridlines
+        modelx = glm::translate(baseModelMat, glm::vec3(0, 0, -50.0f + i));
+        shader.setMat4("model", modelx);
+
+        glDrawArrays(GL_LINES, 0, 2);
+    }
+
+    // z gridlines
+    glBindVertexArray(VAOs[1]);
+    for (int i = 0; i < 101; i++)
+    {
+        // same as x gridlines
+        modelz = glm::translate(baseModelMat, glm::vec3(-50.0f + i, 0, 0));
+        shader.setMat4("model", modelz);
+
+        glDrawArrays(GL_LINES, 0, 2);
+    }
+
+    // NET
+    // net (using the X gridlines for the horizontal portion of the net)
+    glBindVertexArray(VAOs[0]);
+    shader.setVec3("trueColor", glm::vec3(0.0f, 0.15f, 0.0f)); // set color for net
+    for (int i = 0; i < 16; i++)
+    {
+        // same as x gridlines
+        modelx = glm::translate(baseModelMat, glm::vec3(0.0f, 2.0f + i / 2, 0));
+        shader.setMat4("model", modelx);
+
+        glDrawArrays(GL_LINES, 0, 2);
+    }
+
+    // vertical net bits
+    glBindVertexArray(VAOs[3]);
+    for (int i = 0; i < 37; i++)
+    {
+        // same as x gridlines
+        netModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f + i, 0, 0));
+        shader.setMat4("model", netModelMat);
+
+        glDrawArrays(GL_LINES, 0, 2);
+    }
+
+    // texture for net posts
+    if (textureToggle)
+    {
+        glBindTexture(GL_TEXTURE_2D, triColor);
+    }
+    // top part of the net
+    glBindVertexArray(VAOs[4]);
+    shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for net railing
+    modelx = glm::scale(modelx, glm::vec3(18.0f, 0.5f, 0.2f));
+    shader.setMat4("model", modelx);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // right post of net
+    shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for net posts
+    netModelMat = glm::scale(netModelMat, glm::vec3(0.4f, 6.0f, 0.4f));
+    shader.setMat4("model", netModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // middle post of net
+    netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
+    shader.setMat4("model", netModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // left post of net
+    netModelMat = glm::translate(netModelMat, glm::vec3(-45.0f, 0.0f, 0.0f));
+    shader.setMat4("model", netModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    if (textureToggle)
+    {
+        glBindTexture(GL_TEXTURE_2D, clay);
+    }
+
+    glBindVertexArray(VAOs[5]);
+    // TERRAIN
+    // base of terrain
+    shader.setVec3("trueColor", glm::vec3(0.0f, 0.52f, 0.4f)); // set color for terrain base
+
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -1.0f, 0.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.2f, 39.0f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // terrain lines
+    shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f)); // set color for terrain lines
+    // vertical lines
+    // far left line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(-18.0f, -0.5f, 0.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // not-as-far-left line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(-12.0f, -0.5f, 0.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // middle line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 0.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 21.0f));
+    shader.setMat4("model", terrainModelMat);;
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // not-as-far-right line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(12.0f, -0.5f, 0.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // far right line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(18.0f, -0.5f, 0.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(0.2f, 0.5f, 39.0f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // horizontal lines
+    // top line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 39.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // upper middle line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, 21.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // lower midde line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -21.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(12.0f, 0.5f, 0.2f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // bottom line
+    terrainModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, -0.5f, -39.0f));
+    terrainModelMat = glm::scale(terrainModelMat, glm::vec3(18.0f, 0.5f, 0.2f));
+    shader.setMat4("model", terrainModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindTexture(GL_TEXTURE_2D, white);
+
+}
+void renderRacket(Shader shader, glm::mat4 baseModelMat, unsigned int VAOs[6], int miniController) {
+
+    glm::mat4 modelMatLowerArm = glm::mat4(1.0f);
+    glm::mat4 modelMatUpperArm = glm::mat4(1.0f);
+    glm::mat4 baseRacketModelMat = glm::mat4(1.0f);
+    glm::mat4 racketCompModelMat = glm::mat4(1.0f);
+    glm::mat4 vertMesh = glm::mat4(1.0f);
+    glm::mat4 trueVertMesh = glm::mat4(1.0f);
+    glm::mat4 horiMesh = glm::mat4(1.0f);
+    glm::mat4 trueHoriMesh = glm::mat4(1.0f);
+
+    //shader.use();
+
+                   // Hierarchical structure: each piece of the model (lower arm, upper arm, and racket) have a model matrix that build off of the last one. 
+                   // This way, all transformations (translation/rotation) are applied to the next component, but that piece can also apply it's own transformations that do not affect lower components
+                   // create a scaling matrix based off of the rotation matrix so that it retains any world rotations
+
+                   // scaling matrix - top of hierarchy
+    baseModelMat = glm::translate(baseModelMat, glm::vec3(racketposx[miniController], racketposy[miniController], racketposz[miniController])); // translates entire model - rooted at origin
+    baseModelMat = glm::scale(baseModelMat, glm::vec3(scaleFactor[miniController], scaleFactor[miniController], scaleFactor[miniController])); // scales entire model
+    // rotations for the lower arm portion of the model - upper arm and racket reflect the same rotations
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(larmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(larmrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with an offset to give the arm the initial angle (larmrotz = -45.0f)
+
+    //modelMatLowerArm = baseModelMat;
+    modelMatLowerArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
+    shader.setMat4("model", modelMatLowerArm);
+    shader.setVec3("trueColor", glm::vec3(0.95f, 0.8f, 0.72f)); // set color for lower arm (and upper arm -> color will not be set to this same value for the upper arm)
+
+    glBindVertexArray(VAOs[5]);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // translate the upper arm so that it sits just above the lower arm
+    baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 8.0f, 0.0f)); // fixed offset of upper arm in reference to the lower arm
+    // rotations for the upper arm protion of the model - the racket reflects the same rotations
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(uarmrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f)); // starts with a counter rotation to offset the rotation introduced by the lower arm (uarmrotz = 45.0f)
+
+    //modelMatUpperArm = baseModelMat;
+    modelMatUpperArm = glm::scale(baseModelMat, glm::vec3(1.0f, 4.0f, 1.0f));
+    shader.setMat4("model", modelMatUpperArm);
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+    // apply hierarchical rotations for the racket
+    baseModelMat = glm::translate(baseModelMat, glm::vec3(0.0f, 9.0f, 0.0f));
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotx[miniController]), glm::vec3(1.0f, 0.0f, 0.0f));
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(racketroty[miniController]), glm::vec3(0.0f, 1.0f, 0.0f));
+    baseModelMat = glm::rotate(baseModelMat, glm::radians(racketrotz[miniController]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+
+    // by doing one side of the racket and then the other, I can simply anchor the base of the next piece to the end of the last, simplifying some translation math
+    // 
+    // note how for every component, I translate, then scale, then rotate. 
+    // This allows me to easily anchor the base of the next component to the end of the last component. 
+    // It is a 'simple' translation because I only need to translate in the Y direction and the component will translate in the rotated Y, allowing it to align perfectly
+
+    if (textureToggle)
+    {
+        glBindTexture(GL_TEXTURE_2D, glossy);
+    }
+    // RACKET LEFT
+    // racket component 1 - bottom left
+    baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.5f, 1.0f));
+    //racketCompModelMat = glm::translate(racketCompModelMat, glm::vec3(0.0f, 0.0f, 0.0f));
+    shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // racket component 2 - left wall
+    baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.5f, 0.0f));
+    baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.0f, 1.0f));
+    shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // racket component 3 - left first top
+    baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.0f, 0.0f));
+    baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.408f, 1.0f));
+    shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // racket component 4 - left second top
+    baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 2.816f, 0.0f));
+    baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(-40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.732f, 1.0f));
+    shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+    // RACKET RIGHT
+    // racket component 5 - bottom right
+    baseRacketModelMat = glm::rotate(baseModelMat, glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.5f, 1.0f));
+    //racketCompModelMat = glm::translate(racketCompModelMat, glm::vec3(0.0f, 0.0f, 0.0f));
+    shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // racket component 6 - right wall
+    baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.5f, 0.0f));
+    baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 3.0f, 1.0f));
+    shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // racket component 7 - right first top
+    baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 6.0f, 0.0f));
+    baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.408f, 1.0f));
+    shader.setVec3("trueColor", glm::vec3(0.9f, 0.2f, 0.2f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // racket component 8 - right second top
+    baseRacketModelMat = glm::translate(baseRacketModelMat, glm::vec3(0.0f, 2.816f, 0.0f));
+    baseRacketModelMat = glm::rotate(baseRacketModelMat, glm::radians(40.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    racketCompModelMat = glm::scale(baseRacketModelMat, glm::vec3(1.0f, 1.732f, 1.0f));
+    shader.setVec3("trueColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    shader.setMat4("model", racketCompModelMat);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+    // racket mesh
+    shader.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.5f));
+
+    //vertical lines
+    vertMesh = glm::scale(baseModelMat, glm::vec3(0.1f, 5.0f, 0.1f));
+    vertMesh = glm::translate(vertMesh, glm::vec3(0.0f, 0.5f, 0.0f));
+    for (int i = 0; i < 9; i++)
+    {
+        trueVertMesh = glm::translate(vertMesh, glm::vec3((i - 4.0f) * 10, 0.0f, 0.0f));
+        shader.setMat4("model", trueVertMesh);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+
+    // horizontal lines
+    horiMesh = glm::translate(baseModelMat, glm::vec3(0.0f, 7.5f, 0.0f));
+    horiMesh = glm::scale(horiMesh, glm::vec3(4.5f, 0.1f, 0.1f));
+
+    for (int i = 0; i < 11; i++)
+    {
+        trueHoriMesh = glm::translate(horiMesh, glm::vec3(0.0f, (i - 5.0f) * 10, 0.0f));
+        shader.setMat4("model", trueHoriMesh);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+}
 
 int main()
 {
