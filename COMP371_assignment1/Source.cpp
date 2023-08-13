@@ -12,6 +12,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//#include <COMP371_assignment1/OBJloaderV2.h>
+
+#include "OBJloader.h"
+#include "OBJloaderV2.h"
+
+
+#include <algorithm>
+
+// for importing models 
+GLuint setupModelVBO(std::string path, int& vertexCount);
+
+//Sets up a model using an Element Buffer Object to refer to vertex data
+GLuint setupModelEBO(std::string path, int& vertexCount);
+
+
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -211,7 +228,7 @@ void defineSphereIndexArray() {
 }
 
 struct SphereData { GLuint VAO, VBO, EBO; } bindSphereVAO() {
-    
+
     SphereData data;
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -326,13 +343,13 @@ int Assignment2(GLFWwindow* window)
         1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 3.0f, // top-left
         1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
 
-       // XZ secondary (top face)
-       -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 3.0f, // top-left
-        1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 0.0f, // bottom-right
-        1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 3.0f, // top-right  
-        1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 0.0f, // bottom-right
-       -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 3.0f, // top-left
-       -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
+        // XZ secondary (top face)
+        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 3.0f, // top-left
+         1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 0.0f, // bottom-right
+         1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 3.0f, // top-right  
+         1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 3.0f, 0.0f, // bottom-right
+        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 3.0f, // top-left
+        -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
     };
 
     // 5 - unit cube (base building block for model)
@@ -378,13 +395,13 @@ int Assignment2(GLFWwindow* window)
          1.0f,  2.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
          1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left
 
-        // XZ secondary (top face)
-        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-         1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-         1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right  
-         1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-        -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-        -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
+         // XZ secondary (top face)
+         -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+          1.0f,  2.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+          1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right  
+          1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
+         -1.0f,  2.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
+         -1.0f,  2.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left
     };
 
 
@@ -731,6 +748,22 @@ int Assignment2(GLFWwindow* window)
     shadow.setInt("shadowMap", 1);
 
 
+
+    //Setup models
+ //string heraclesPath = "C:/Users/afafa/Downloads/Lab08_cmake/Lab08/code/assets/models/091_W_Aya_30K.obj";
+    std::string heraclesPath = "C:/Users/afafa/OneDrive/Documents/GitHub/COMP371A2/COMP371_assignment1/models/ConcreteBench-L3.obj";
+    std::string cubePath = "C:/Users/afafa/OneDrive/Documents/GitHub/COMP371A2/COMP371_assignment1/models/cube.obj";
+
+    /* int heraclesVertices;
+     GLuint heraclesVAO = setupModelEBO(heraclesPath, heraclesVertices);
+
+
+     int activeVertices = heraclesVertices;
+     GLuint activeVAO = heraclesVAO;
+
+ */
+
+
     lightPos = glm::vec3(0.0f, 5.0f, 5.0f);
 
     // Afaf
@@ -794,13 +827,49 @@ int Assignment2(GLFWwindow* window)
 
         // render first passes
         // the 'if (true)' statements are there just so that the code can be collapsed
-        
+
         // world rotation matrix - root of hierarchical model for EVERYONE
         baseModelMat = glm::mat4(1.0f);
         baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationx), glm::vec3(1.0f, 0.0f, 0.0f)); // rotate on true X
         baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationy), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate on current Y -> I'll look into this more later, but I wasn't able to find a way to make the third rotation be on the true axis, so I decided Y should rotate on current
         baseModelMat = glm::rotate(baseModelMat, glm::radians(rotationz), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate on true Z
         safeBaseModelMat = baseModelMat;
+
+
+
+
+        // imported model first pass
+        if (true) {
+
+            int heraclesVertices;
+            GLuint heraclesVAO = setupModelEBO(heraclesPath, heraclesVertices);
+
+
+            int activeVertices = heraclesVertices;
+            GLuint activeVAO = heraclesVAO;
+
+
+            // Set model matrix and send to both shaders
+            glm::mat4 importedModelMatrix = //mat4(1.0f);
+                glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, -3.0f)) *
+                // glm::rotate(mat4(1.0f), radians(spinningAngle), vec3(0.0f, 1.0f, 0.0f)) *
+                //   glm::rotate(mat4(1.0f), radians(270.0f), vec3(0.0f, 1.0f, 0.0f)) *
+                glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+                glm::scale(glm::mat4(1.0f), glm::vec3(0.011f));
+
+            firstPass.setMat4("model", importedModelMatrix);
+
+            // Bind geometry
+            glBindVertexArray(activeVAO);
+            // Draw geometry
+            glDrawElements(GL_TRIANGLES, activeVertices, GL_UNSIGNED_INT, 0);
+            // Unbind geometry
+            glBindVertexArray(0);
+            //  SetUniformMat4(shaderShadow, "model_matrix", modelMatrix);
+        }
+
+
+
 
         // Craig
         if (true)
@@ -1489,11 +1558,11 @@ int Assignment2(GLFWwindow* window)
         // Kelly
         if (true) {
 
-             //this is just here to be out of the way
-            //doesnt need to be initialised more than once
-            //float gUNIT = float(1) / float(100);
-            //float init_size = gUNIT * 2;
-            //based on this unit cube
+            //this is just here to be out of the way
+           //doesnt need to be initialised more than once
+           //float gUNIT = float(1) / float(100);
+           //float init_size = gUNIT * 2;
+           //based on this unit cube
             float init_size = 2.0f;
             //float model_size = init_size*scaleFactor[kpos];
             float arm_size = 2 * init_size;
@@ -1523,7 +1592,7 @@ int Assignment2(GLFWwindow* window)
 
             //draw upper arm
             //use a transform matrix on the upper arm 
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0 , init_size , 0));
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0, init_size, 0));
             kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f, 1.0f));//twice as long
             uarmWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", uarmWorldMatrix);
@@ -1531,7 +1600,7 @@ int Assignment2(GLFWwindow* window)
 
             //draw elbow
             //use a transform matrix on the shoulder
-            kBaseModelMat = glm::translate((kBaseModelMat), glm::vec3(0,(arm_size/2), 0));
+            kBaseModelMat = glm::translate((kBaseModelMat), glm::vec3(0, (arm_size / 2), 0));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(uarmrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -1551,7 +1620,7 @@ int Assignment2(GLFWwindow* window)
 
             //draw hand (wrist is for now the hand)
             //use a transform matrix on the elbow
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0,(arm_size/2),  0));
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0, (arm_size / 2), 0));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotx[3]), glm::vec3(1.0f, 0.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketroty[3]), glm::vec3(0.0f, 1.0f, 0.0f));
             kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -1593,8 +1662,8 @@ int Assignment2(GLFWwindow* window)
             }
 
             //turn it from a sad sticck into a bat at least
-            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0.85* init_size,-0.25*init_size,0));
-            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f,2.0f ));
+            kBaseModelMat = glm::translate(kBaseModelMat, glm::vec3(0.85 * init_size, -0.25 * init_size, 0));
+            kBaseModelMat = glm::scale(kBaseModelMat, glm::vec3(1.0f, 2.0f, 2.0f));
             //kBaseModelMat = glm::rotate(kBaseModelMat, glm::radians(racketrotz[3]), glm::vec3(0.0f, 0.0f, 1.0f));
             batWorldMatrix = kBaseModelMat;
             firstPass.setMat4("model", batWorldMatrix);
@@ -1691,7 +1760,7 @@ int Assignment2(GLFWwindow* window)
             glm::mat4 ballScale = glm::inverse(lowerArmScale * racketScale * paddleScale);
             glm::mat4 ballTranslate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
             glm::mat4 ballWorldMatrix = paddleMatrix * ballScale * ballTranslate;
-;
+            ;
             firstPass.setMat4("model", ballWorldMatrix);
             glDrawElements(GL_TRIANGLES, sizeof(sphereIndexArray) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
         }
@@ -1722,6 +1791,42 @@ int Assignment2(GLFWwindow* window)
         glBindTexture(GL_TEXTURE_2D, white);
 
         // render second passes
+
+
+
+          // imported model second pass
+        if (true) {
+
+            int heraclesVertices;
+            GLuint heraclesVAO = setupModelEBO(heraclesPath, heraclesVertices);
+
+
+            int activeVertices = heraclesVertices;
+            GLuint activeVAO = heraclesVAO;
+
+
+            // Set model matrix and send to both shaders
+            glm::mat4 importedModelMatrix = //mat4(1.0f);
+                glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, -3.0f)) *
+                // glm::rotate(mat4(1.0f), radians(spinningAngle), vec3(0.0f, 1.0f, 0.0f)) *
+                //   glm::rotate(mat4(1.0f), radians(270.0f), vec3(0.0f, 1.0f, 0.0f)) *
+                glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+                glm::scale(glm::mat4(1.0f), glm::vec3(0.011f));
+
+            shadow.setMat4("model", importedModelMatrix);
+
+            // Bind geometry
+            glBindVertexArray(activeVAO);
+            // Draw geometry
+            glDrawElements(GL_TRIANGLES, activeVertices, GL_UNSIGNED_INT, 0);
+            // Unbind geometry
+            glBindVertexArray(0);
+            //  SetUniformMat4(shaderShadow, "model_matrix", modelMatrix);
+        }
+
+
+
+
 
         // Craig
         if (true)
@@ -2065,7 +2170,7 @@ int Assignment2(GLFWwindow* window)
             shadow.setMat4("model", racketCompModelMat);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            
+
 
             // racket mesh
             shadow.setVec3("trueColor", glm::vec3(0.0f, 1.0f, 0.5f));
@@ -2507,7 +2612,7 @@ int Assignment2(GLFWwindow* window)
 
         //Kelly
         if (true) {
-              //colours
+            //colours
             glm::vec3 MIAMI_PINK = glm::vec3(1.0f, 0.40f, 1.0f);
             glm::vec3 MIAMI_BLUE = glm::vec3(0.5f, 1.0f, 1.0f);
             glm::vec3 WHITE_VEC3 = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -2589,7 +2694,7 @@ int Assignment2(GLFWwindow* window)
             {
                 glBindTexture(GL_TEXTURE_2D, glossy);
             }
-            
+
             // Lower arm world matrix
             glm::mat4 lowerArmScale = glm::scale(glm::mat4(1.0f), scaleFactor[4] * glm::vec3(5.0f, 0.5f, 0.5f));
 
@@ -3280,6 +3385,104 @@ unsigned int loadTexture(char const* path)
     return textureID;
 }
 
+// for importing models 
+
+GLuint setupModelVBO(std::string path, int& vertexCount)
+{
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> UVs;
+
+    //read the vertex data from the model's OBJ file
+    loadOBJ(path.c_str(), vertices, normals, UVs);
+
+    GLuint VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO); //Becomes active VAO
+    // Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+
+    //Vertex VBO setup
+    GLuint vertices_VBO;
+    glGenBuffers(1, &vertices_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vertices_VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices.front(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    //Normals VBO setup
+    GLuint normals_VBO;
+    glGenBuffers(1, &normals_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, normals_VBO);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals.front(), GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(1);
+
+    //UVs VBO setup
+    GLuint uvs_VBO;
+    glGenBuffers(1, &uvs_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, uvs_VBO);
+    glBufferData(GL_ARRAY_BUFFER, UVs.size() * sizeof(glm::vec2), &UVs.front(), GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+    // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs, as we are using multiple VAOs)
+    vertexCount = vertices.size();
+    return VAO;
+}
+
+GLuint setupModelEBO(std::string path, int& vertexCount)
+{
+    std::vector<int> vertexIndices;
+    //The contiguous sets of three indices of vertices, normals and UVs, used to make a triangle
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> UVs;
+
+    //read the vertices from the cube.obj file
+    //We won't be needing the normals or UVs for this program
+    loadOBJ2(path.c_str(), vertexIndices, vertices, normals, UVs);
+
+    GLuint VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO); //Becomes active VAO
+    // Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+
+    //Vertex VBO setup
+    GLuint vertices_VBO;
+    glGenBuffers(1, &vertices_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vertices_VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices.front(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    //Normals VBO setup
+    GLuint normals_VBO;
+    glGenBuffers(1, &normals_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, normals_VBO);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals.front(), GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(1);
+
+    //UVs VBO setup
+    GLuint uvs_VBO;
+    glGenBuffers(1, &uvs_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, uvs_VBO);
+    glBufferData(GL_ARRAY_BUFFER, UVs.size() * sizeof(glm::vec2), &UVs.front(), GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(2);
+
+    //EBO setup
+    GLuint EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices.size() * sizeof(int), &vertexIndices.front(), GL_STATIC_DRAW);
+
+    glBindVertexArray(0);
+    // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
+    vertexCount = vertexIndices.size();
+    return VAO;
+}
 
 int main()
 {
